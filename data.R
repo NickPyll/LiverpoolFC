@@ -64,7 +64,10 @@ x.data.update <-
     '2018-12-30', 'Crystal Palace', 'Chelsea', 0, 1,
     '2018-12-30', 'Southampton', 'Man City', 1, 3,
     '2018-12-30', 'Burnley', 'West Ham', 2, 0,
-    '2018-12-30', 'Man United', 'Bournemouth', 4, 1
+    '2018-12-30', 'Man United', 'Bournemouth', 4, 1,
+    '2019-01-01', 'Everton', 'Leicester', 0, 1,
+    '2019-01-01', 'Arsenal', 'Fulham', 4, 1,
+    '2019-01-01', 'Cardiff', 'Tottenham', 0, 3
   )
 
 # add the updated data
