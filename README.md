@@ -19,6 +19,7 @@ Sys.setenv("plotly_username" = "<your user id>")
 Sys.setenv("plotly_api_key" = "<your password>")
 
 # packages needed for data manipulation
+library(jsonlite)
 library(dplyr)
 library(magrittr)
 library(tidyr)
