@@ -1,8 +1,17 @@
 # read current season
-x.data <- read.csv(url(json_data$resources$path[2]))
+# x.data <- read.csv(url(json_data$resources$path[2]))
+x.data <- read.csv('season-1819_csv.csv')
+x.data %<>%
+  mutate(
+    Date = as.Date(as.character(Date), format = '%m/%d/%y')) 
+
 
 # read last 10 seasons
-x.1819 <- read.csv(url(json_data$resources$path[2]))
+# x.1819 <- read.csv(url(json_data$resources$path[2]))
+x.1819 <- read.csv('season-1819_csv.csv')
+x.1819 %<>%
+  mutate(
+    Date = as.Date(as.character(Date), format = '%m/%d/%y')) 
 x.1718 <- read.csv(url(json_data$resources$path[3]))
 x.1617 <- read.csv(url(json_data$resources$path[4]))
 x.1516 <- read.csv(url(json_data$resources$path[5]))
@@ -16,7 +25,8 @@ x.0910 <- read.csv(url(json_data$resources$path[11]))
 ########## Manual Entry Data ####
 
 # see when data was last updated
-max(as.Date(as.character(x.data$Date), format = '%Y-%m-%d'))
+# max(as.Date(as.character(x.data$Date), format = '%Y-%m-%d'))
+max(as.Date(as.character(x.data$Date), format = '%m/%d/%y'))
 
 # manually enter updated data
 x.data.update.10yr <-
@@ -24,8 +34,13 @@ x.data.update.10yr <-
     ~Date, ~HomeTeam, ~AwayTeam, ~FTHG, ~FTAG,
     '2018-12-21', 'Wolves', 'Liverpool', 0, 2,
     '2018-12-26', 'Liverpool', 'Newcastle', 4, 0,
-    '2018-12-29', 'Liverpool', 'Arsenal', 5, 1
+    '2018-12-29', 'Liverpool', 'Arsenal', 5, 1,
+    '2019-01-03', 'Man City', 'Liverpool', 2, 1
   )
+
+x.data.update.10yr %<>%
+  mutate(
+    Date = as.Date(as.character(Date), format = '%Y-%m-%d'))
 
 # add the updated data
 x.1819 %<>%
@@ -67,8 +82,19 @@ x.data.update <-
     '2018-12-30', 'Man United', 'Bournemouth', 4, 1,
     '2019-01-01', 'Everton', 'Leicester', 0, 1,
     '2019-01-01', 'Arsenal', 'Fulham', 4, 1,
-    '2019-01-01', 'Cardiff', 'Tottenham', 0, 3
+    '2019-01-01', 'Cardiff', 'Tottenham', 0, 3,
+    '2019-01-02', 'Wolves', 'Crystal Palace', 0, 2,
+    '2019-01-02', 'Chelsea', 'Southampton', 0, 0,
+    '2019-01-02', 'West Ham', 'Brighton', 2, 2,
+    '2019-01-02', 'Huddersfield', 'Burnley', 1, 2,
+    '2019-01-02', 'Newcastle', 'Man United', 0, 2,
+    '2019-01-02', 'Bournemouth', 'Watford', 3, 3,
+    '2019-01-03', 'Man City', 'Liverpool', 2, 1
   )
+
+x.data.update %<>%
+  mutate(
+    Date = as.Date(as.character(Date), format = '%Y-%m-%d'))
 
 # add the updated data
 x.data %<>%
@@ -219,14 +245,16 @@ liverpool.league.history %<>%
 # format variables and create GameID
 x.data %<>%
   mutate(
-    Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
+    # Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
+    # Date = as.Date(as.character(Date), format = '%m/%d/%y'),
     GameID = paste0(HomeTeam, AwayTeam),
     HomeTeam = as.character(HomeTeam),
     AwayTeam = as.character(AwayTeam)) 
 x.1819 %<>%
   filter(HomeTeam == 'Liverpool' | AwayTeam == 'Liverpool') %>%
   mutate(
-    Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
+    # Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
+    # Date = as.Date(as.character(Date), format = '%m/%d/%y'),
     HomeTeam = paste0(as.character(HomeTeam), '1819'),
     AwayTeam = paste0(as.character(AwayTeam), '1819'),
     GameID = paste0(HomeTeam, AwayTeam),

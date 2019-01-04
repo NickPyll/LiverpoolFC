@@ -23,7 +23,14 @@ rank.by.year <-
   add_annotations(x = 2009, y = 44, text = 'Third Division', xref = 'x', yref = 'y', showarrow = F) %>%
   add_annotations(x = 2009, y = 32, text = 'Second Division', xref = 'x', yref = 'y', showarrow = F) %>%
   add_annotations(x = 2009, y = 12, text = 'First Division', xref = 'x', yref = 'y', showarrow = F) %>%
-  layout(title = "Liverpool League Position by Year",
+  layout(
+    # autosize = FALSE, width = 100, height = 100,
+    #      margin = list(l = 50,
+    #                    r = 50,
+    #                    b = 100,
+    #                    t = 100,
+    #                    pad = 4), 
+         title = "Liverpool League Position by Year",
          xaxis = list(title = "Year", showgrid = TRUE, showline = TRUE),
          yaxis = list (title = "", autorange = "reversed", 
                        zeroline = FALSE, showline = FALSE, showgrid = FALSE, showticklabels = FALSE),
@@ -39,3 +46,5 @@ rank.by.year <-
                 y0 = 1, y1 = 45, yref = 'y')
          )
          )
+
+# api_create(rank.by.year, filename = "Premier-League-RBY-2019")
