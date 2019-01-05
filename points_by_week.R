@@ -48,3 +48,5 @@ points.by.week <-
          margin = list(l = 50,r = 50, b = 100, t = 100, pad = 4))
 
 points.by.week
+
+# api_create(points.by.week, filename = "Premier-League-PBW-2019")

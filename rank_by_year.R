@@ -1,6 +1,6 @@
 # create graph showing final position by year
 rank.by.year <- 
-  plot_ly(liverpool.league.history, 
+  plot_ly(rby.data, 
           x = ~Year) %>%
   add_trace(y = ~NumTeamsFirstDiv + 1, name = "First/Second Division", 
           type = 'scatter', mode = 'lines',
@@ -46,5 +46,7 @@ rank.by.year <-
                 y0 = 1, y1 = 45, yref = 'y')
          )
          )
+
+rank.by.year
 
 # api_create(rank.by.year, filename = "Premier-League-RBY-2019")

@@ -1,17 +1,17 @@
 # read current season
-# x.data <- read.csv(url(json_data$resources$path[2]))
-x.data <- read.csv('season-1819_csv.csv')
-x.data %<>%
-  mutate(
-    Date = as.Date(as.character(Date), format = '%m/%d/%y')) 
+x.current.data <- read.csv(url(json_data$resources$path[2]))
+# x.current.data <- read.csv('season-1819_csv.csv')
+# x.current.data %<>%
+#   mutate(
+#     Date = as.Date(as.character(Date), format = '%m/%d/%y')) 
 
 
 # read last 10 seasons
-# x.1819 <- read.csv(url(json_data$resources$path[2]))
-x.1819 <- read.csv('season-1819_csv.csv')
-x.1819 %<>%
-  mutate(
-    Date = as.Date(as.character(Date), format = '%m/%d/%y')) 
+x.1819 <- read.csv(url(json_data$resources$path[2]))
+# x.1819 <- read.csv('season-1819_csv.csv')
+# x.1819 %<>%
+#   mutate(
+#     Date = as.Date(as.character(Date), format = '%m/%d/%y')) 
 x.1718 <- read.csv(url(json_data$resources$path[3]))
 x.1617 <- read.csv(url(json_data$resources$path[4]))
 x.1516 <- read.csv(url(json_data$resources$path[5]))
@@ -25,83 +25,83 @@ x.0910 <- read.csv(url(json_data$resources$path[11]))
 ########## Manual Entry Data ####
 
 # see when data was last updated
-# max(as.Date(as.character(x.data$Date), format = '%Y-%m-%d'))
-max(as.Date(as.character(x.data$Date), format = '%m/%d/%y'))
+max(as.Date(as.character(x.current.data$Date), format = '%Y-%m-%d'))
+# max(as.Date(as.character(x.current.data$Date), format = '%m/%d/%y'))
 
-# manually enter updated data
-x.data.update.10yr <-
-  tribble(
-    ~Date, ~HomeTeam, ~AwayTeam, ~FTHG, ~FTAG,
-    '2018-12-21', 'Wolves', 'Liverpool', 0, 2,
-    '2018-12-26', 'Liverpool', 'Newcastle', 4, 0,
-    '2018-12-29', 'Liverpool', 'Arsenal', 5, 1,
-    '2019-01-03', 'Man City', 'Liverpool', 2, 1
-  )
+# # manually enter updated data
+# x.data.update.10yr <-
+#   tribble(
+#     ~Date, ~HomeTeam, ~AwayTeam, ~FTHG, ~FTAG,
+#     '2018-12-21', 'Wolves', 'Liverpool', 0, 2,
+#     '2018-12-26', 'Liverpool', 'Newcastle', 4, 0,
+#     '2018-12-29', 'Liverpool', 'Arsenal', 5, 1,
+#     '2019-01-03', 'Man City', 'Liverpool', 2, 1
+#   )
 
-x.data.update.10yr %<>%
-  mutate(
-    Date = as.Date(as.character(Date), format = '%Y-%m-%d'))
+# x.data.update.10yr %<>%
+#   mutate(
+#     Date = as.Date(as.character(Date), format = '%Y-%m-%d'))
 
-# add the updated data
-x.1819 %<>%
-  bind_rows(x.data.update.10yr)
+# # add the updated data
+# x.1819 %<>%
+#   bind_rows(x.data.update.10yr)
 
-# manually enter updated data
-x.data.update <-
-  tribble(
-    ~Date, ~HomeTeam, ~AwayTeam, ~FTHG, ~FTAG,
-    '2018-12-21', 'Wolves', 'Liverpool', 0, 2,
-    '2018-12-22', 'Arsenal', 'Burnley', 3, 1,
-    '2018-12-22', 'Huddersfield', 'Southampton', 1, 3,
-    '2018-12-22', 'Bournemouth', 'Brighton', 2, 0,
-    '2018-12-22', 'Man City', 'Crystal Palace', 2, 3,
-    '2018-12-22', 'Newcastle', 'Fulham', 0, 0,
-    '2018-12-22', 'Chelsea', 'Leicester', 0, 1,
-    '2018-12-22', 'West Ham', 'Watford', 0, 2,
-    '2018-12-22', 'Cardiff', 'Man United', 1, 5,
-    '2018-12-23', 'Everton', 'Tottenham', 2, 6,
-    '2018-12-26', 'Fulham', 'Wolves', 1, 1,
-    '2018-12-26', 'Burnley', 'Everton', 1, 5,
-    '2018-12-26', 'Liverpool', 'Newcastle', 4, 0,
-    '2018-12-26', 'Crystal Palace', 'Cardiff', 0, 0,
-    '2018-12-26', 'Leicester', 'Man City', 2, 1,
-    '2018-12-26', 'Tottenham', 'Bournemouth', 5, 0,
-    '2018-12-26', 'Man United', 'Huddersfield', 3, 1,
-    '2018-12-26', 'Brighton', 'Arsenal', 1, 1,
-    '2018-12-26', 'Watford', 'Chelsea', 1, 2,
-    '2018-12-27', 'Southampton', 'West Ham', 1, 2,
-    '2018-12-29', 'Watford', 'Newcastle', 1, 1,
-    '2018-12-29', 'Brighton', 'Everton', 1, 0,
-    '2018-12-29', 'Tottenham', 'Wolves', 1, 3,
-    '2018-12-29', 'Fulham', 'Huddersfield', 1, 0, 
-    '2018-12-29', 'Leicester', 'Cardiff', 0, 1,
-    '2018-12-29', 'Liverpool', 'Arsenal', 5, 1,
-    '2018-12-30', 'Crystal Palace', 'Chelsea', 0, 1,
-    '2018-12-30', 'Southampton', 'Man City', 1, 3,
-    '2018-12-30', 'Burnley', 'West Ham', 2, 0,
-    '2018-12-30', 'Man United', 'Bournemouth', 4, 1,
-    '2019-01-01', 'Everton', 'Leicester', 0, 1,
-    '2019-01-01', 'Arsenal', 'Fulham', 4, 1,
-    '2019-01-01', 'Cardiff', 'Tottenham', 0, 3,
-    '2019-01-02', 'Wolves', 'Crystal Palace', 0, 2,
-    '2019-01-02', 'Chelsea', 'Southampton', 0, 0,
-    '2019-01-02', 'West Ham', 'Brighton', 2, 2,
-    '2019-01-02', 'Huddersfield', 'Burnley', 1, 2,
-    '2019-01-02', 'Newcastle', 'Man United', 0, 2,
-    '2019-01-02', 'Bournemouth', 'Watford', 3, 3,
-    '2019-01-03', 'Man City', 'Liverpool', 2, 1
-  )
+# # manually enter updated data
+# x.data.update <-
+#   tribble(
+#     ~Date, ~HomeTeam, ~AwayTeam, ~FTHG, ~FTAG,
+#     '2018-12-21', 'Wolves', 'Liverpool', 0, 2,
+#     '2018-12-22', 'Arsenal', 'Burnley', 3, 1,
+#     '2018-12-22', 'Huddersfield', 'Southampton', 1, 3,
+#     '2018-12-22', 'Bournemouth', 'Brighton', 2, 0,
+#     '2018-12-22', 'Man City', 'Crystal Palace', 2, 3,
+#     '2018-12-22', 'Newcastle', 'Fulham', 0, 0,
+#     '2018-12-22', 'Chelsea', 'Leicester', 0, 1,
+#     '2018-12-22', 'West Ham', 'Watford', 0, 2,
+#     '2018-12-22', 'Cardiff', 'Man United', 1, 5,
+#     '2018-12-23', 'Everton', 'Tottenham', 2, 6,
+#     '2018-12-26', 'Fulham', 'Wolves', 1, 1,
+#     '2018-12-26', 'Burnley', 'Everton', 1, 5,
+#     '2018-12-26', 'Liverpool', 'Newcastle', 4, 0,
+#     '2018-12-26', 'Crystal Palace', 'Cardiff', 0, 0,
+#     '2018-12-26', 'Leicester', 'Man City', 2, 1,
+#     '2018-12-26', 'Tottenham', 'Bournemouth', 5, 0,
+#     '2018-12-26', 'Man United', 'Huddersfield', 3, 1,
+#     '2018-12-26', 'Brighton', 'Arsenal', 1, 1,
+#     '2018-12-26', 'Watford', 'Chelsea', 1, 2,
+#     '2018-12-27', 'Southampton', 'West Ham', 1, 2,
+#     '2018-12-29', 'Watford', 'Newcastle', 1, 1,
+#     '2018-12-29', 'Brighton', 'Everton', 1, 0,
+#     '2018-12-29', 'Tottenham', 'Wolves', 1, 3,
+#     '2018-12-29', 'Fulham', 'Huddersfield', 1, 0, 
+#     '2018-12-29', 'Leicester', 'Cardiff', 0, 1,
+#     '2018-12-29', 'Liverpool', 'Arsenal', 5, 1,
+#     '2018-12-30', 'Crystal Palace', 'Chelsea', 0, 1,
+#     '2018-12-30', 'Southampton', 'Man City', 1, 3,
+#     '2018-12-30', 'Burnley', 'West Ham', 2, 0,
+#     '2018-12-30', 'Man United', 'Bournemouth', 4, 1,
+#     '2019-01-01', 'Everton', 'Leicester', 0, 1,
+#     '2019-01-01', 'Arsenal', 'Fulham', 4, 1,
+#     '2019-01-01', 'Cardiff', 'Tottenham', 0, 3,
+#     '2019-01-02', 'Wolves', 'Crystal Palace', 0, 2,
+#     '2019-01-02', 'Chelsea', 'Southampton', 0, 0,
+#     '2019-01-02', 'West Ham', 'Brighton', 2, 2,
+#     '2019-01-02', 'Huddersfield', 'Burnley', 1, 2,
+#     '2019-01-02', 'Newcastle', 'Man United', 0, 2,
+#     '2019-01-02', 'Bournemouth', 'Watford', 3, 3,
+#     '2019-01-03', 'Man City', 'Liverpool', 2, 1
+# )
 
-x.data.update %<>%
-  mutate(
-    Date = as.Date(as.character(Date), format = '%Y-%m-%d'))
+# x.data.update %<>%
+#   mutate(
+#     Date = as.Date(as.character(Date), format = '%Y-%m-%d'))
 
-# add the updated data
-x.data %<>%
-  bind_rows(x.data.update) 
+# # add the updated data
+# x.current.data %<>%
+#   bind_rows(x.data.update) 
 
 # data for Liverpool league position by year
-liverpool.league.history <-
+x.liverpool.league.history <-
   tribble(
     ~Year, ~Position, ~League, ~NumTeamsFirstDiv, ~NumTeamsSecondDiv,
     1893, 1, 3, 16, 12,
@@ -236,25 +236,24 @@ liverpool.league.history <-
 ########## Data Transformation ####
 
 # logic for identifyign champions and actual position
-liverpool.league.history %<>%
+rby.data <-
+  x.liverpool.league.history %>%
   mutate(ActualPosition = if_else(League == 1, Position,
                                   ifelse(League == 2, Position + NumTeamsFirstDiv,
                                          Position + NumTeamsFirstDiv + NumTeamsSecondDiv))) %>%
   mutate(Champions = if_else(Position == 1, ActualPosition, NA_real_))
 
 # format variables and create GameID
-x.data %<>%
+x.current.data %<>%
   mutate(
-    # Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
-    # Date = as.Date(as.character(Date), format = '%m/%d/%y'),
+    Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
     GameID = paste0(HomeTeam, AwayTeam),
     HomeTeam = as.character(HomeTeam),
     AwayTeam = as.character(AwayTeam)) 
 x.1819 %<>%
   filter(HomeTeam == 'Liverpool' | AwayTeam == 'Liverpool') %>%
   mutate(
-    # Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
-    # Date = as.Date(as.character(Date), format = '%m/%d/%y'),
+    Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
     HomeTeam = paste0(as.character(HomeTeam), '1819'),
     AwayTeam = paste0(as.character(AwayTeam), '1819'),
     GameID = paste0(HomeTeam, AwayTeam),
@@ -338,7 +337,7 @@ x.data.10yr <-
 
 # create df of home team results
 x.home <-
-  x.data %>%
+  x.current.data %>%
   mutate(Team = HomeTeam,
          GoalsScored = FTHG,
          GoalsConceded = FTAG) %>%
@@ -352,7 +351,7 @@ x.home.10yr <-
 
 # create df of away team results
 x.away <-
-  x.data %>%
+  x.current.data %>%
   mutate(Team = AwayTeam,
          GoalsScored = FTAG,
          GoalsConceded = FTHG) %>%
@@ -365,7 +364,7 @@ x.away.10yr <-
   select(GameID, Date, Team, GoalsScored, GoalsConceded)
 
 # combine home and away dfs
-data <- rbind(x.home, x.away) %>%
+x.data <- rbind(x.home, x.away) %>%
   arrange(Date, GameID) %>%
   # logic for calculatiung goal differential and points earned
   mutate(GoalDifferential = GoalsScored - GoalsConceded,
@@ -387,7 +386,7 @@ data <- rbind(x.home, x.away) %>%
   ungroup()
 
 # combine home and away dfs for 10 year data
-data.10yr <- rbind(x.home.10yr, x.away.10yr) %>%
+x.data.10yr <- rbind(x.home.10yr, x.away.10yr) %>%
   # filter to only champions
   filter(Team %in% c('Liverpool1819',
                      'Man City1718',
@@ -420,15 +419,15 @@ data.10yr <- rbind(x.home.10yr, x.away.10yr) %>%
   ungroup()
 
 # graph looks better starting from a common point of 0
-week.zero <-
-  data %>%
+x.week.zero <-
+  x.data %>%
   select(Team) %>%
   distinct() %>%
   mutate(Week = 0,
          PointsTally = 0) %>%
   spread(Team, PointsTally)
-week.zero.10yr <-
-  data.10yr %>%
+x.week.zero.10yr <-
+  x.data.10yr %>%
   select(Team) %>%
   distinct() %>%
   mutate(Week = 0,
@@ -437,23 +436,27 @@ week.zero.10yr <-
 
 # data for points by week graph
 pbw.data <-
-  data %>%
+  x.data %>%
   select(Week, Team, PointsTally) %>%
   spread(Team, PointsTally) %>%
-  bind_rows(week.zero) %>%
+  bind_rows(x.week.zero) %>%
   arrange(Week)
 
 # data for points by week graph (10 years)
 pbw.data.10yr <-
-  data.10yr %>%
+  x.data.10yr %>%
   select(Week, Team, PointsTally) %>%
   spread(Team, PointsTally) %>%
-  bind_rows(week.zero) %>%
+  bind_rows(x.week.zero) %>%
   arrange(Week)
 
 # data for rank by week graph
 rbw.data <-
-  data %>%
+  x.data %>%
   select(Week, Team, Position) %>%
   spread(Team, Position) %>%
   arrange(Week)
+
+# remove unnecessary objects
+rm(list = ls(pattern = "^x"))
+rm(list = ls(pattern = "^json"))

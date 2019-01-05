@@ -28,3 +28,6 @@ points.by.week.10yr <-
                        showgrid = FALSE, showline = FALSE, showticklabels = FALSE, zeroline = FALSE),
          margin = list(l = 50,r = 50, b = 100, t = 100, pad = 4))
 
+points.by.week.10yr
+
+# api_create(points.by.week.10yr, filename = "Premier-League-PBW10-2019")
