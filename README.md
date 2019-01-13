@@ -14,9 +14,9 @@ https://datahub.io/sports-data/english-premier-league
 library(plotly)
 # packageVersion('plotly')
 
-# Set up API credentials
-Sys.setenv("plotly_username" = "<your user id>")
-Sys.setenv("plotly_api_key" = "<your password>")
+# # Set up API credentials
+# Sys.setenv("plotly_username" = "<your user id>")
+# Sys.setenv("plotly_api_key" = "<your password>")
 
 # packages needed for data manipulation
 library(jsonlite)
