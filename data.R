@@ -10,13 +10,14 @@ max(as.Date(as.character(x.current.data$Date), format = '%Y-%m-%d'))
 x.data.update <-
   tribble(
     ~Date, ~HomeTeam, ~AwayTeam, ~FTHG, ~FTAG,
-    '2019-01-12', 'West Ham', 'Arsenal', 1, 0,
-    '2019-01-12', 'Burnley', 'Fulham', 2, 1,
-    '2019-01-12', 'Crystal Palace', 'Watford', 1, 2,
-    '2019-01-12', 'Cardiff', 'Huddersfield', 0, 0,
-    '2019-01-12', 'Brighton', 'Liverpool', 0, 1,
-    '2019-01-12', 'Leicester', 'Southampton', 1, 2,
-    '2019-01-12', 'Chelsea', 'Newcastle', 2, 1
+    '2019-02-22', 'West Ham', 'Fulham', 3, 1,
+    '2019-02-22', 'Cardiff', 'Watford', 1, 5,
+    '2019-02-23', 'Burnley', 'Tottenham', 2, 1,
+    '2019-02-23', 'Bournemouth', 'Wolves', 1, 1,
+    '2019-02-23', 'Newcastle', 'Huddersfield', 2, 0,
+    '2019-02-23', 'Leicester', 'Crystal Palace', 1, 4,
+    '2019-02-24', 'Man United', 'Liverpool', 0, 0,
+    '2019-02-24', 'Arsenal', 'Southampton', 2, 0
 )
 
 x.data.update %<>%
@@ -173,6 +174,25 @@ x.liverpool.league.history <-
     2018, 4, 1, 20, 22,
     2019, NA, 1, 20, 22
   )
+
+# Remaining Fixtures for Manchester City and Liverpool
+x.remaining.fixtures <-
+  tribble(
+    ~Week, ~Liverpool, ~ManCity,
+    28, 'Watford', 'WestHam',
+    29, 'Everton', 'Bournemouth',
+    30, 'Burnley', 'Watford',
+    31, 'Fulham', 'Fulham',
+    32, 'Tottenham', 'Cardiff',
+    33, 'Southampton', 'CrystalPalace',
+    34, 'Chelsea', 'Tottenham',
+    35, 'Cardiff', 'ManUnited',
+    36, 'Huddersfield', 'Burnley',
+    37, 'Newcastle', 'Leicester',
+    38, 'Wolves', 'Brighton'
+  )
+    
+
 
 ########## Data Transformation ####
 
@@ -333,6 +353,11 @@ x.data <- rbind(x.home, x.away) %>%
          GoalsConcededTally = cumsum(GoalsConceded),
          GoalDifferentialTally = cumsum(GoalDifferential)) %>%
   ungroup() %>%
+  mutate(Team = str_trim(gsub(" ", "", Team)))
+
+# determine league position by week
+x.rank <-
+  x.data %>%
   group_by(Week) %>%
   arrange(desc(PointsTally), desc(GoalDifferentialTally), desc(GoalsScoredTally)) %>%
   # create league position
@@ -422,11 +447,44 @@ gdbw.data <-
 
 # data for rank by week graph
 rbw.data <-
-  x.data %>%
+  x.rank %>%
   select(Week, Team, Position) %>%
   spread(Team, Position) %>%
   arrange(Week)
 
+# determine current league position for each team
+x.current.rank <-
+  x.data %>%
+  group_by(Team) %>%
+  filter(Week == max(Week)) %>%
+  ungroup() %>%
+  select(Team, GoalsScoredTally, GoalsConcededTally, GoalDifferentialTally, PointsTally) %>%
+  arrange(desc(PointsTally), desc(GoalDifferentialTally), desc(GoalsScoredTally)) %>%
+  # create league position
+  mutate(Position = row_number()) %>%
+  select(Team, Position)
+
+# add current rank to remaining opponents
+x.liverpool.opp.rank <-
+  inner_join(x.remaining.fixtures, x.current.rank, by = c('Liverpool' = 'Team')) %>%
+  rename(Liverpool.Opponent = Position) %>%
+  select(Liverpool.Opponent) %>%
+  arrange(Liverpool.Opponent) 
+  
+x.mancity.opp.rank <-
+  inner_join(x.remaining.fixtures, x.current.rank, by = c('ManCity' = 'Team')) %>%
+  rename(ManCity.Opponent = Position) %>%
+  select(ManCity.Opponent) %>%
+  arrange(ManCity.Opponent) 
+
+# remaining weeks  
+x.week <- 
+  x.remaining.fixtures %>%
+  select(Week)
+
+# combine data
+orbw.data <- cbind(x.week, x.liverpool.opp.rank, x.mancity.opp.rank)
+
 # remove unnecessary objects
-rm(list = ls(pattern = "^x"))
-rm(list = ls(pattern = "^json"))
+# rm(list = ls(pattern = "^x"))
+# rm(list = ls(pattern = "^json"))

@@ -7,7 +7,7 @@ You do not need to set up API credentials to produce these visuals locally, only
 Data used in this exploration was sourced from:  
 https://datahub.io/sports-data/english-premier-league
 
-```
+```{r}
 ########## Setup Environment ####
 
 # plotly package needed for creating and publishing visuals
