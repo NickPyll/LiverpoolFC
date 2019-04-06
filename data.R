@@ -10,14 +10,15 @@ max(as.Date(as.character(x.current.data$Date), format = '%Y-%m-%d'))
 x.data.update <-
   tribble(
     ~Date, ~HomeTeam, ~AwayTeam, ~FTHG, ~FTAG,
-    '2019-02-22', 'West Ham', 'Fulham', 3, 1,
-    '2019-02-22', 'Cardiff', 'Watford', 1, 5,
-    '2019-02-23', 'Burnley', 'Tottenham', 2, 1,
-    '2019-02-23', 'Bournemouth', 'Wolves', 1, 1,
-    '2019-02-23', 'Newcastle', 'Huddersfield', 2, 0,
-    '2019-02-23', 'Leicester', 'Crystal Palace', 1, 4,
-    '2019-02-24', 'Man United', 'Liverpool', 0, 0,
-    '2019-02-24', 'Arsenal', 'Southampton', 2, 0
+    '2019-04-02', 'Wolverhampton', 'Man United', 2, 1,
+    '2019-04-02', 'Watford', 'Fulham', 4, 1,
+    '2019-04-03', 'Chelsea', 'Brighton', 3, 0,
+    '2019-04-03', 'Tottenham', 'Crystal Palace', 2, 0,
+    '2019-04-03', 'Man City', 'Cardiff', 2, 0,
+    '2019-04-05', 'Southampton', 'Liverpool', 1, 3,
+    '2019-04-06', 'Huddersfield', 'Leicester City', 1, 4,
+    '2019-04-06', 'Newcastle', 'Crystal Palace', 0, 1,
+    '2019-04-06', 'Bournemouth', 'Burnley', 1, 3
 )
 
 x.data.update %<>%
@@ -179,11 +180,6 @@ x.liverpool.league.history <-
 x.remaining.fixtures <-
   tribble(
     ~Week, ~Liverpool, ~ManCity,
-    28, 'Watford', 'WestHam',
-    29, 'Everton', 'Bournemouth',
-    30, 'Burnley', 'Watford',
-    31, 'Fulham', 'Fulham',
-    32, 'Tottenham', 'Cardiff',
     33, 'Southampton', 'CrystalPalace',
     34, 'Chelsea', 'Tottenham',
     35, 'Cardiff', 'ManUnited',
@@ -192,7 +188,23 @@ x.remaining.fixtures <-
     38, 'Wolves', 'Brighton'
   )
     
-
+# Five Thirty Eight probabilities
+x.rem.prob <-
+  tribble(
+    ~Team, ~pwin, ~pdraw,
+    'Liverpool', .66, .20,
+    'Liverpool', .59, .24,
+    'Liverpool', .74, .17,
+    'Liverpool', .89, .09,
+    'Liverpool', .65, .21,
+    'Liverpool', .80, .15,
+    'Man City', .66, .20,
+    'Man City', .68, .19,
+    'Man City', .56, .22,
+    'Man City', .74, .16,
+    'Man City', .83, .13,
+    'Man City', .75, .16
+)
 
 ########## Data Transformation ####
 
