@@ -498,5 +498,5 @@ x.week <-
 orbw.data <- cbind(x.week, x.liverpool.opp.rank, x.mancity.opp.rank)
 
 # remove unnecessary objects
-# rm(list = ls(pattern = "^x"))
-# rm(list = ls(pattern = "^json"))
+rm(list = ls(pattern = "^x"))
+rm(list = ls(pattern = "^json"))
