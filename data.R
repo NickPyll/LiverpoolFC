@@ -10,15 +10,10 @@ max(as.Date(as.character(x.current.data$Date), format = '%Y-%m-%d'))
 x.data.update <-
   tribble(
     ~Date, ~HomeTeam, ~AwayTeam, ~FTHG, ~FTAG,
-    '2019-04-02', 'Wolverhampton', 'Man United', 2, 1,
-    '2019-04-02', 'Watford', 'Fulham', 4, 1,
-    '2019-04-03', 'Chelsea', 'Brighton', 3, 0,
-    '2019-04-03', 'Tottenham', 'Crystal Palace', 2, 0,
-    '2019-04-03', 'Man City', 'Cardiff', 2, 0,
-    '2019-04-05', 'Southampton', 'Liverpool', 1, 3,
-    '2019-04-06', 'Huddersfield', 'Leicester City', 1, 4,
-    '2019-04-06', 'Newcastle', 'Crystal Palace', 0, 1,
-    '2019-04-06', 'Bournemouth', 'Burnley', 1, 3
+    '2019-04-23', 'Watford', 'Southampton', 1, 1,
+    '2019-04-23', 'Tottenham', 'Brighton', 1, 0,
+    '2019-04-24', 'Man United', 'Man City', 0, 2,
+    '2019-04-24', 'Wolves', 'Arsenal', 3, 1
 )
 
 x.data.update %<>%
@@ -180,9 +175,6 @@ x.liverpool.league.history <-
 x.remaining.fixtures <-
   tribble(
     ~Week, ~Liverpool, ~ManCity,
-    33, 'Southampton', 'CrystalPalace',
-    34, 'Chelsea', 'Tottenham',
-    35, 'Cardiff', 'ManUnited',
     36, 'Huddersfield', 'Burnley',
     37, 'Newcastle', 'Leicester',
     38, 'Wolves', 'Brighton'
@@ -192,15 +184,9 @@ x.remaining.fixtures <-
 x.rem.prob <-
   tribble(
     ~Team, ~pwin, ~pdraw,
-    'Liverpool', .66, .20,
-    'Liverpool', .59, .24,
-    'Liverpool', .74, .17,
     'Liverpool', .89, .09,
     'Liverpool', .65, .21,
     'Liverpool', .80, .15,
-    'Man City', .66, .20,
-    'Man City', .68, .19,
-    'Man City', .56, .22,
     'Man City', .74, .16,
     'Man City', .83, .13,
     'Man City', .75, .16
@@ -482,7 +468,7 @@ x.liverpool.opp.rank <-
   rename(Liverpool.Opponent = Position) %>%
   select(Liverpool.Opponent) %>%
   arrange(Liverpool.Opponent) 
-  
+
 x.mancity.opp.rank <-
   inner_join(x.remaining.fixtures, x.current.rank, by = c('ManCity' = 'Team')) %>%
   rename(ManCity.Opponent = Position) %>%
@@ -498,5 +484,5 @@ x.week <-
 orbw.data <- cbind(x.week, x.liverpool.opp.rank, x.mancity.opp.rank)
 
 # remove unnecessary objects
-rm(list = ls(pattern = "^x"))
-rm(list = ls(pattern = "^json"))
+# rm(list = ls(pattern = "^x"))
+# rm(list = ls(pattern = "^json"))

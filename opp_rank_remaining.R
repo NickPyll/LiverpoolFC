@@ -6,7 +6,7 @@ opp.rank.by.week <-
   add_trace(y = ~ManCity.Opponent, name = 'Manchester City Opponent Rank', type = 'scatter', mode = 'lines', 
             line = list(shape = 'spline', color = 'rgb(108, 171, 221)', width = 1)) %>%
   add_annotations(x = 35, y = 7, text = paste('Mean Liverpool Opponent = ', 
-                                              round(mean(orbw.data$Liverpool.Opponent), digits = 2)),
+                                              round(mean(orbw.data$Liverpool.Opponent, na.rm = TRUE), digits = 2)),
                   xref = 'x', yref = 'y', showarrow = F) %>%
   add_annotations(x = 35, y = 5, text = paste('Mean Manchester City Opponent = ', 
                                               round(mean(orbw.data$ManCity.Opponent), digits = 2)),
