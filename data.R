@@ -1,43 +1,66 @@
+########## Setup Environment ####
+
+# plotly package needed for creating and publishing visuals
+library(plotly)
+# packageVersion('plotly')
+
+# # Set up API credentials
+# Sys.setenv("plotly_username" = "<your user id>")
+# Sys.setenv("plotly_api_key" = "<your password>")
+
+# packages needed for data manipulation
+library(dplyr)
+library(magrittr)
+library(tidyr)
+library(stringr)
+library(readr)
+
 ########## Load Current Season ####
+
+# load premier league seasons
+x.1920 <- read_csv('https://www.football-data.co.uk/mmz4281/1920/E0.csv')
+x.1819 <- read_csv('https://www.football-data.co.uk/mmz4281/1819/E0.csv')
+x.1718 <- read_csv('https://www.football-data.co.uk/mmz4281/1718/E0.csv')
+x.1617 <- read_csv('https://www.football-data.co.uk/mmz4281/1617/E0.csv')
+x.1516 <- read_csv('https://www.football-data.co.uk/mmz4281/1516/E0.csv')
+x.1415 <- read_csv('https://www.football-data.co.uk/mmz4281/1415/E0.csv')
+x.1314 <- read_csv('https://www.football-data.co.uk/mmz4281/1314/E0.csv')
+x.1213 <- read_csv('https://www.football-data.co.uk/mmz4281/1213/E0.csv')
+x.1112 <- read_csv('https://www.football-data.co.uk/mmz4281/1112/E0.csv')
+x.1011 <- read_csv('https://www.football-data.co.uk/mmz4281/1011/E0.csv')
+x.0910 <- read_csv('https://www.football-data.co.uk/mmz4281/0910/E0.csv')
+
 # read current season
-x.current.data <- read.csv(url(json_data$resources$path[2]))
+x.current.data <- x.1920
 
 # see when data was last updated
 max(as.Date(as.character(x.current.data$Date), format = '%Y-%m-%d'))
 
-########## Manual Entry Data ####
-# manually enter updated data
-x.data.update <-
+# premier league clubs
+x.premier.league.clubs <-
   tribble(
-    ~Date, ~HomeTeam, ~AwayTeam, ~FTHG, ~FTAG,
-    '2019-04-23', 'Watford', 'Southampton', 1, 1,
-    '2019-04-23', 'Tottenham', 'Brighton', 1, 0,
-    '2019-04-24', 'Man United', 'Man City', 0, 2,
-    '2019-04-24', 'Wolves', 'Arsenal', 3, 1
-)
+    ~club,
+    'Arsenal', 'Aston Villa', 'Bournemouth', 'Brighton', 'Burnley', 'Chelsea', 
+    'Crystal Palace', 'Everton', 'Leicester', 'Liverpool', 'Man City', 'Man United', 
+    'Newcastle', 'Norwich', 'Sheffield United', 'Southampton', 'Tottenham', 'Watford', 
+    'West Ham', 'Wolves')
 
-x.data.update %<>%
-  mutate(
-    Date = as.Date(as.character(Date), format = '%Y-%m-%d'))
-
-# Pull Liverpool games from manual update
-x.data.update.10yr <-
-  x.data.update %>%
-  filter(HomeTeam == 'Liverpool' | AwayTeam == 'Liverpool')
+x.fixture.list <- 
+  x.premier.league.clubs %>%
+  rename(HomeTeam = club) %>%
+  mutate(k = 1) %>%
+  inner_join(x.premier.league.clubs %>%
+                 rename(AwayTeam = club) %>%
+                 mutate(k = 1),
+             by = 'k') %>%
+  select(-k) %>%
+  filter(HomeTeam != AwayTeam) %>%
+  left_join(x.1920 %>%
+              select(HomeTeam, AwayTeam) %>%
+              mutate(played = 1), 
+             by = c('HomeTeam', 'AwayTeam'))
 
 ########## Load Historical Data ####
-# read last 10 seasons
-x.1819 <- read.csv(url(json_data$resources$path[2]))
-x.1718 <- read.csv(url(json_data$resources$path[3]))
-x.1617 <- read.csv(url(json_data$resources$path[4]))
-x.1516 <- read.csv(url(json_data$resources$path[5]))
-x.1415 <- read.csv(url(json_data$resources$path[6]))
-x.1314 <- read.csv(url(json_data$resources$path[7]))
-x.1213 <- read.csv(url(json_data$resources$path[8]))
-x.1112 <- read.csv(url(json_data$resources$path[9]))
-x.1011 <- read.csv(url(json_data$resources$path[10]))
-x.0910 <- read.csv(url(json_data$resources$path[11]))
-
 # data for Liverpool league position by year
 x.liverpool.league.history <-
   tribble(
@@ -171,46 +194,7 @@ x.liverpool.league.history <-
     2019, NA, 1, 20, 22
   )
 
-# Remaining Fixtures for Manchester City and Liverpool
-x.remaining.fixtures <-
-  tribble(
-    ~Week, ~Liverpool, ~ManCity,
-    36, 'Huddersfield', 'Burnley',
-    37, 'Newcastle', 'Leicester',
-    38, 'Wolves', 'Brighton'
-  )
-    
-# Five Thirty Eight probabilities
-x.rem.prob <-
-  tribble(
-    ~Team, ~pwin, ~pdraw,
-    'Liverpool', .89, .09,
-    'Liverpool', .65, .21,
-    'Liverpool', .80, .15,
-    'Man City', .74, .16,
-    'Man City', .83, .13,
-    'Man City', .75, .16
-)
-
 ########## Data Transformation ####
-
-# add the updated data
-x.current.data %<>%
-  mutate(
-    Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
-    HomeTeam = as.character(HomeTeam),
-    AwayTeam = as.character(AwayTeam)) %>%
-  bind_rows(x.data.update %>%
-              filter(Date > max(as.Date(as.character(x.current.data$Date), format = '%Y-%m-%d')))) 
-
-# add the updated data
-x.1819 %<>%
-  mutate(
-    Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
-    HomeTeam = as.character(HomeTeam),
-    AwayTeam = as.character(AwayTeam)) %>%
-  bind_rows(x.data.update.10yr %>%
-              filter(Date > max(as.Date(as.character(x.1819$Date), format = '%Y-%m-%d')))) 
 
 # logic for identifying champions and actual position
 rby.data <-
@@ -223,82 +207,103 @@ rby.data <-
 # format variables and create GameID
 x.current.data %<>%
   mutate(
+    Date = as.Date(as.character(Date), format = '%d/%m/%Y'),
     GameID = paste0(HomeTeam, AwayTeam)) 
-x.1819 %<>%
+x.1920 %<>%
+  select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Liverpool' | AwayTeam == 'Liverpool') %>%
   mutate(
+    Date = as.Date(as.character(Date), format = '%d/%m/%Y'),
+    GameID = paste0(HomeTeam, AwayTeam),
+    HomeTeam = paste0(as.character(HomeTeam), '1920'),
+    AwayTeam = paste0(as.character(AwayTeam), '1920'),
+    Season = '1920')
+x.1819 %<>%
+  select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
+  filter(HomeTeam == 'Man City' | AwayTeam == 'Man City') %>%
+  mutate(
+    Date = as.Date(as.character(Date), format = '%d/%m/%Y'),
     GameID = paste0(HomeTeam, AwayTeam),
     HomeTeam = paste0(as.character(HomeTeam), '1819'),
     AwayTeam = paste0(as.character(AwayTeam), '1819'),
     Season = '1819') 
 x.1718 %<>%
+  select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Man City' | AwayTeam == 'Man City') %>%
   mutate(
-    Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
+    Date = as.Date(as.character(Date), format = '%d/%m/%Y'),
     GameID = paste0(HomeTeam, AwayTeam),
     HomeTeam = paste0(as.character(HomeTeam), '1718'),
     AwayTeam = paste0(as.character(AwayTeam), '1718'),
     Season = '1718') 
 x.1617 %<>%
+  select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Chelsea' | AwayTeam == 'Chelsea') %>%
   mutate(
-    Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
+    Date = as.Date(as.character(Date), format = '%d/%m/%y'),
     GameID = paste0(HomeTeam, AwayTeam),
     HomeTeam = paste0(as.character(HomeTeam), '1617'),
     AwayTeam = paste0(as.character(AwayTeam), '1617'),
     Season = '1617') 
 x.1516 %<>%
+  select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Leicester' | AwayTeam == 'Leicester') %>%
   mutate(
-    Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
+    Date = as.Date(as.character(Date), format = '%d/%m/%y'),
     GameID = paste0(HomeTeam, AwayTeam),
     HomeTeam = paste0(as.character(HomeTeam), '1516'),
     AwayTeam = paste0(as.character(AwayTeam), '1516'),
     Season = '1516') 
 x.1415 %<>%
+  select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Chelsea' | AwayTeam == 'Chelsea') %>%
   mutate(
-    Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
+    Date = as.Date(as.character(Date), format = '%d/%m/%y'),
     GameID = paste0(HomeTeam, AwayTeam),
     HomeTeam = paste0(as.character(HomeTeam), '1415'),
     AwayTeam = paste0(as.character(AwayTeam), '1415'),
     Season = '1415') 
 x.1314 %<>%
+  select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Man City' | AwayTeam == 'Man City') %>%
   mutate(
-    Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
+    Date = as.Date(as.character(Date), format = '%d/%m/%y'),
     GameID = paste0(HomeTeam, AwayTeam),
     HomeTeam = paste0(as.character(HomeTeam), '1314'),
     AwayTeam = paste0(as.character(AwayTeam), '1314'),
     Season = '1314') 
 x.1213 %<>%
+  select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Man United' | AwayTeam == 'Man United') %>%
   mutate(
-    Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
+    Date = as.Date(as.character(Date), format = '%d/%m/%y'),
     GameID = paste0(HomeTeam, AwayTeam),
     HomeTeam = paste0(as.character(HomeTeam), '1213'),
     AwayTeam = paste0(as.character(AwayTeam), '1213'),
     Season = '1213') 
 x.1112 %<>%
+  select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Man City' | AwayTeam == 'Man City') %>%
   mutate(
-    Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
+    Date = as.Date(as.character(Date), format = '%d/%m/%y'),
     GameID = paste0(HomeTeam, AwayTeam),
     HomeTeam = paste0(as.character(HomeTeam), '1112'),
     AwayTeam = paste0(as.character(AwayTeam), '1112'),
     Season = '1112') 
 x.1011 %<>%
+  select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Man United' | AwayTeam == 'Man United') %>%
   mutate(
-    Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
+    Date = as.Date(as.character(Date), format = '%d/%m/%y'),
     GameID = paste0(HomeTeam, AwayTeam),
     HomeTeam = paste0(as.character(HomeTeam), '1011'),
     AwayTeam = paste0(as.character(AwayTeam), '1011'),
     Season = '1011') 
 x.0910 %<>%
+  select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Chelsea' | AwayTeam == 'Chelsea') %>%
   mutate(
-    Date = as.Date(as.character(Date), format = '%Y-%m-%d'),
+    Date = as.Date(as.character(Date), format = '%d/%m/%y'),
     GameID = paste0(HomeTeam, AwayTeam),
     HomeTeam = paste0(as.character(HomeTeam), '0910'),
     AwayTeam = paste0(as.character(AwayTeam), '0910'),
@@ -306,7 +311,7 @@ x.0910 %<>%
 
 # Combine 10 years of data
 x.data.10yr <-
-  rbind(x.1819, x.1718, x.1617, x.1516, x.1415, x.1314, x.1213, x.1112, x.1011, x.0910)
+  rbind(x.1920, x.1819, x.1718, x.1617, x.1516, x.1415, x.1314, x.1213, x.1112, x.1011, x.0910)
 
 # create df of home team results
 x.home <-
@@ -366,7 +371,8 @@ x.rank <-
 # combine home and away dfs for 10 year data
 x.data.10yr <- rbind(x.home.10yr, x.away.10yr) %>%
   # filter to only champions
-  filter(Team %in% c('Liverpool1819',
+  filter(Team %in% c('Liverpool1920',
+                     'Man City1819',
                      'Man City1718',
                      'Chelsea1617',
                      'Leicester1516',
@@ -462,26 +468,38 @@ x.current.rank <-
   mutate(Position = row_number()) %>%
   select(Team, Position)
 
-# add current rank to remaining opponents
-x.liverpool.opp.rank <-
-  inner_join(x.remaining.fixtures, x.current.rank, by = c('Liverpool' = 'Team')) %>%
-  rename(Liverpool.Opponent = Position) %>%
-  select(Liverpool.Opponent) %>%
-  arrange(Liverpool.Opponent) 
+x.remaining.fixtures <-
+  x.fixture.list %>%
+  mutate(HomeTeam = str_trim(gsub(" ", "", HomeTeam)),  
+         AwayTeam = str_trim(gsub(" ", "", AwayTeam))) %>%
+  filter(is.na(played)) %>%
+  select(-played) %>%
+  left_join(x.current.rank %>%
+              rename(HomePosition = Position),
+            by = c("HomeTeam" = "Team")) %>%
+  left_join(x.current.rank %>%
+              rename(AwayPosition = Position),
+            by = c("AwayTeam" = "Team"))
 
-x.mancity.opp.rank <-
-  inner_join(x.remaining.fixtures, x.current.rank, by = c('ManCity' = 'Team')) %>%
-  rename(ManCity.Opponent = Position) %>%
-  select(ManCity.Opponent) %>%
-  arrange(ManCity.Opponent) 
-
-# remaining weeks  
-x.week <- 
+x.strength.of.schedule <-
   x.remaining.fixtures %>%
-  select(Week)
+  select(HomeTeam, AwayPosition) %>%
+  rename(Team = HomeTeam,
+         Position = AwayPosition) %>%
+  bind_rows(x.remaining.fixtures %>%
+              select(AwayTeam, HomePosition) %>%
+              rename(Team = AwayTeam,
+                     Position = HomePosition)) %>%
+  arrange(Team, desc(Position)) %>%
+  group_by(Team) %>%
+  mutate(Week = row_number()) %>%
+  ungroup()
 
-# combine data
-orbw.data <- cbind(x.week, x.liverpool.opp.rank, x.mancity.opp.rank)
+orbw.data <- 
+  x.strength.of.schedule %>%
+  select(Team, Week, Position) %>%
+  spread(Team, Position) %>%
+  arrange(Week)
 
 # remove unnecessary objects
 # rm(list = ls(pattern = "^x"))
