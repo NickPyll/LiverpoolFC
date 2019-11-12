@@ -30,9 +30,6 @@ x.1112 <- read_csv('https://www.football-data.co.uk/mmz4281/1112/E0.csv')
 x.1011 <- read_csv('https://www.football-data.co.uk/mmz4281/1011/E0.csv')
 x.0910 <- read_csv('https://www.football-data.co.uk/mmz4281/0910/E0.csv')
 
-# read current season
-x.current.data <- x.1920
-
 # see when data was last updated
 max(as.Date(as.character(x.current.data$Date), format = '%Y-%m-%d'))
 
@@ -59,6 +56,13 @@ x.fixture.list <-
               select(HomeTeam, AwayTeam) %>%
               mutate(played = 1), 
              by = c('HomeTeam', 'AwayTeam'))
+
+x.current.data <- 
+  x.1920 %>%
+  select(Date, HomeTeam, AwayTeam, FTHG, FTAG)
+
+# see when data was last updated
+max(as.Date(as.character(x.current.data$Date), format = '%d/%m/%Y'))
 
 ########## Load Historical Data ####
 # data for Liverpool league position by year
@@ -191,11 +195,10 @@ x.liverpool.league.history <-
     2016, 8, 1, 20, 22,
     2017, 4, 1, 20, 22,
     2018, 4, 1, 20, 22,
-    2019, NA, 1, 20, 22
+    2019, 2, 1, 20, 22
   )
 
 ########## Data Transformation ####
-
 # logic for identifying champions and actual position
 rby.data <-
   x.liverpool.league.history %>%
@@ -207,8 +210,8 @@ rby.data <-
 # format variables and create GameID
 x.current.data %<>%
   mutate(
-    Date = as.Date(as.character(Date), format = '%d/%m/%Y'),
-    GameID = paste0(HomeTeam, AwayTeam)) 
+    GameID = paste0(HomeTeam, AwayTeam),
+    Date = as.Date(as.character(Date), format = '%d/%m/%Y'))
 x.1920 %<>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Liverpool' | AwayTeam == 'Liverpool') %>%
