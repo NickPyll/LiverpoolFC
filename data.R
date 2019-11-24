@@ -505,5 +505,5 @@ orbw.data <-
   arrange(Week)
 
 # remove unnecessary objects
-# rm(list = ls(pattern = "^x"))
-# rm(list = ls(pattern = "^json"))
+rm(list = ls(pattern = "^x"))
+rm(list = ls(pattern = "^json"))
