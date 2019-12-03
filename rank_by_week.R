@@ -1,3 +1,5 @@
+# Teams with game in hand not rendering correctly...need to address
+
 # create graph showing league position by week
 rank.by.week <- 
   plot_ly(rbw.data, x = ~Week) %>%
@@ -47,7 +49,7 @@ rank.by.week <-
             line = list(shape = 'spline', color = 'rgb(122, 38, 58)', width = 1)) %>%
   add_trace(y = ~Wolves, name = 'Wolverhampton', type = 'scatter', mode = 'lines', 
             line = list(shape = 'spline', color = 'rgb(253, 185, 19)', width = 1)) %>%
-  layout(title = "Premier League Position by Week",
+  layout(title = paste("Premier League Position by Week <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
          xaxis = list(title = "Week", rangemode = 'tozero', showline = FALSE, zeroline = FALSE),
          yaxis = list (title = "", rangemode = 'nonnegative', autorange = "reversed", 
                        showgrid = FALSE, showline = FALSE, showticklabels = FALSE, zeroline = FALSE),

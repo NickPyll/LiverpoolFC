@@ -30,13 +30,17 @@ x.1112 <- read_csv('https://www.football-data.co.uk/mmz4281/1112/E0.csv')
 x.1011 <- read_csv('https://www.football-data.co.uk/mmz4281/1011/E0.csv')
 x.0910 <- read_csv('https://www.football-data.co.uk/mmz4281/0910/E0.csv')
 
+x.current.data <- 
+  x.1920 %>%
+  select(Date, HomeTeam, AwayTeam, FTHG, FTAG)
+
 # see when data was last updated
-max(as.Date(as.character(x.current.data$Date), format = '%Y-%m-%d'))
+max(as.Date(as.character(x.current.data$Date), format = '%d/%m/%Y'))
 
 # premier league clubs
 x.premier.league.clubs <-
   tribble(
-    ~club,
+    ~Team,
     'Arsenal', 'Aston Villa', 'Bournemouth', 'Brighton', 'Burnley', 'Chelsea', 
     'Crystal Palace', 'Everton', 'Leicester', 'Liverpool', 'Man City', 'Man United', 
     'Newcastle', 'Norwich', 'Sheffield United', 'Southampton', 'Tottenham', 'Watford', 
@@ -44,10 +48,10 @@ x.premier.league.clubs <-
 
 x.fixture.list <- 
   x.premier.league.clubs %>%
-  rename(HomeTeam = club) %>%
+  rename(HomeTeam = Team) %>%
   mutate(k = 1) %>%
   inner_join(x.premier.league.clubs %>%
-                 rename(AwayTeam = club) %>%
+                 rename(AwayTeam = Team) %>%
                  mutate(k = 1),
              by = 'k') %>%
   select(-k) %>%
@@ -56,13 +60,6 @@ x.fixture.list <-
               select(HomeTeam, AwayTeam) %>%
               mutate(played = 1), 
              by = c('HomeTeam', 'AwayTeam'))
-
-x.current.data <- 
-  x.1920 %>%
-  select(Date, HomeTeam, AwayTeam, FTHG, FTAG)
-
-# see when data was last updated
-max(as.Date(as.character(x.current.data$Date), format = '%d/%m/%Y'))
 
 ########## Load Historical Data ####
 # data for Liverpool league position by year
@@ -346,20 +343,42 @@ x.away.10yr <-
 
 # combine home and away dfs
 x.data <- rbind(x.home, x.away) %>%
+  mutate(played = 1) %>%
   arrange(Date, GameID) %>%
-  # logic for calculatiung goal differential and points earned
-  mutate(GoalDifferential = GoalsScored - GoalsConceded,
+  # logic for calculating goal differential and points earned
+  mutate(Team = str_trim(gsub(" ", "", Team)),
+         GoalDifferential = GoalsScored - GoalsConceded,
          PointsEarned = if_else(GoalsScored > GoalsConceded, 3,
                         if_else(GoalsScored < GoalsConceded, 0, 1))) %>%
   group_by(Team) %>%
-  # create week number and cumulative sums
-  mutate(Week = row_number(),
-         PointsTally = cumsum(PointsEarned),
+  # create week number
+  mutate(Week = row_number()) %>%
+  ungroup()
+
+# create a week df to complete
+x.week.teams <-
+  data.frame(Week = seq(1, max(x.data$Week), 1)) %>%
+  mutate(k = 1) %>%
+  inner_join(x.premier.league.clubs %>%
+               mutate(Team = str_trim(gsub(" ", "", Team)),
+                      k = 1),
+             by = 'k') %>%
+  select(-k)
+
+# aggregate totals by team
+x.data %<>%
+  right_join(x.week.teams,
+            by = c("Week", "Team")) %>%
+  arrange(Date, GameID) %>%
+  mutate(PointsEarned = if_else(is.na(PointsEarned), 0, PointsEarned),
+         GoalsScored = if_else(is.na(GoalsScored), 0, GoalsScored),
+         GoalsConceded = if_else(is.na(GoalsConceded), 0, GoalsConceded),
+         GoalDifferential = if_else(is.na(GoalDifferential), 0, GoalDifferential)) %>%
+  group_by(Team) %>%
+  mutate(PointsTally = cumsum(PointsEarned),
          GoalsScoredTally = cumsum(GoalsScored),
          GoalsConcededTally = cumsum(GoalsConceded),
-         GoalDifferentialTally = cumsum(GoalDifferential)) %>%
-  ungroup() %>%
-  mutate(Team = str_trim(gsub(" ", "", Team)))
+         GoalDifferentialTally = cumsum(GoalDifferential))
 
 # determine league position by week
 x.rank <-
@@ -369,7 +388,7 @@ x.rank <-
   # create league position
   mutate(Position = row_number(),
          Team = str_trim(gsub(" ", "", Team))) %>%
-  ungroup()
+  ungroup() 
 
 # combine home and away dfs for 10 year data
 x.data.10yr <- rbind(x.home.10yr, x.away.10yr) %>%
@@ -431,6 +450,7 @@ x.week.zero.gd <-
 # data for points by week graph
 pbw.data <-
   x.data %>%
+  filter(!is.na(played)) %>%
   select(Week, Team, PointsTally) %>%
   spread(Team, PointsTally) %>%
   bind_rows(x.week.zero) %>%
@@ -447,6 +467,7 @@ pbw.data.10yr <-
 # data for goal differential by week graph
 gdbw.data <-
   x.data %>%
+  filter(!is.na(played)) %>%
   select(Week, Team, GoalDifferentialTally) %>%
   spread(Team, GoalDifferentialTally) %>%
   bind_rows(x.week.zero.gd) %>%
@@ -471,6 +492,7 @@ x.current.rank <-
   mutate(Position = row_number()) %>%
   select(Team, Position)
 
+# collect remaining fixtures
 x.remaining.fixtures <-
   x.fixture.list %>%
   mutate(HomeTeam = str_trim(gsub(" ", "", HomeTeam)),  
@@ -484,6 +506,7 @@ x.remaining.fixtures <-
               rename(AwayPosition = Position),
             by = c("AwayTeam" = "Team"))
 
+# join league position
 x.strength.of.schedule <-
   x.remaining.fixtures %>%
   select(HomeTeam, AwayPosition) %>%
@@ -498,6 +521,7 @@ x.strength.of.schedule <-
   mutate(Week = row_number()) %>%
   ungroup()
 
+# data for remaining opponent graph
 orbw.data <- 
   x.strength.of.schedule %>%
   select(Team, Week, Position) %>%

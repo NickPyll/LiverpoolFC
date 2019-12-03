@@ -47,22 +47,16 @@ opp.rank.by.week <-
             line = list(shape = 'spline', color = 'rgb(122, 38, 58)', width = 1)) %>%
   add_trace(y = ~Wolves, name = 'Wolverhampton', type = 'scatter', mode = 'lines', 
             line = list(shape = 'spline', color = 'rgb(253, 185, 19)', width = 1)) %>%
-  add_annotations(x = 2, y = 7, text = 'Mean Liverpool Opponent = 11.46',
+  add_annotations(x = 2, y = 7, text = paste('Mean Liverpool Opponent =', round(mean(orbw.data$Liverpool, na.rm = TRUE), 2)),
                   xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
-  add_annotations(x = 2, y = 6, text = 'Mean Leicester City Opponent = 11.88',
+  add_annotations(x = 2, y = 6, text = paste('Mean Leicester City Opponent =', round(mean(orbw.data$Leicester, na.rm = TRUE), 2)),
                   xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
-  add_annotations(x = 2, y = 5, text = 'Mean Chelsea Opponent = 11.08',
+  add_annotations(x = 2, y = 5, text = paste('Mean Chelsea Opponent =', round(mean(orbw.data$Chelsea, na.rm = TRUE), 2)),
                   xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
-  add_annotations(x = 2, y = 4, text = 'Mean Manchester City Opponent = 9.69',
+  add_annotations(x = 2, y = 4, text = paste('Mean Manchester City Opponent =', round(mean(orbw.data$ManCity, na.rm = TRUE), 2)),
                   xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
   
-  # add_annotations(x = 35, y = 7, text = paste('Mean Liverpool Opponent = ',
-  #                                             round(mean(orbw.data$Liverpool.Opponent, na.rm = TRUE), digits = 2)),
-  #                 xref = 'x', yref = 'y', showarrow = F) %>%
-  # add_annotations(x = 35, y = 5, text = paste('Mean Manchester City Opponent = ',
-  #                                             round(mean(orbw.data$ManCity.Opponent), digits = 2)),
-  #                 xref = 'x', yref = 'y', showarrow = F) %>%
-  layout(title = "Rank of Remaining Opponents",
+  layout(title = paste("Rank of Remaining Opponents <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
          xaxis = list(title = "", showgrid = FALSE, showline = FALSE, zeroline = FALSE, showticklabels = FALSE),
          yaxis = list (title = "Opponent Rank", rangemode = 'nonnegative', 
                        showline = FALSE, showticklabels = TRUE, zeroline = FALSE),

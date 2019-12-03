@@ -20,9 +20,9 @@ rank.by.year <-
           marker = list(symbol = 18, color = 'orange', size = 7)) %>%
   add_trace(y = ~ActualPosition, name = 'Liverpool', type = 'scatter', mode = 'lines',
           line = list(shape = 'linear', color = 'rgb(200, 12, 46)', width = 1)) %>%
-  add_annotations(x = 2009, y = 44, text = 'Third Division', xref = 'x', yref = 'y', showarrow = F) %>%
-  add_annotations(x = 2009, y = 32, text = 'Second Division', xref = 'x', yref = 'y', showarrow = F) %>%
-  add_annotations(x = 2009, y = 12, text = 'First Division', xref = 'x', yref = 'y', showarrow = F) %>%
+  add_annotations(x = max(rby.data$Year), y = 44, text = 'Third Division', xref = 'x', yref = 'y', showarrow = F, xanchor = 'right') %>%
+  add_annotations(x = max(rby.data$Year), y = 32, text = 'Second Division', xref = 'x', yref = 'y', showarrow = F, xanchor = 'right') %>%
+  add_annotations(x = max(rby.data$Year), y = 12, text = 'First Division', xref = 'x', yref = 'y', showarrow = F, xanchor = 'right') %>%
   layout(
     # autosize = FALSE, width = 100, height = 100,
     #      margin = list(l = 50,
@@ -30,7 +30,7 @@ rank.by.year <-
     #                    b = 100,
     #                    t = 100,
     #                    pad = 4), 
-         title = "Liverpool League Position by Year",
+         title = paste("Liverpool League Position by Year 1893 -", max(rby.data$Year)),
          xaxis = list(title = "Year", showgrid = TRUE, showline = TRUE),
          yaxis = list (title = "", autorange = "reversed", 
                        zeroline = FALSE, showline = FALSE, showgrid = FALSE, showticklabels = FALSE),
@@ -41,7 +41,7 @@ rank.by.year <-
            list(type = 'rect', fillcolor = 'white', line = list(color = "white"),
                 x0 = 1940.4, x1 = 1946, xref = 'x',
                 y0 = 1, y1 = 45, yref = 'y'),
-           list(type = 'line', line = list(color = 'gray', dash = 'dot'),
+           list(type = 'line', line = list(color = 'rgba(220, 220, 220, .8)', dash = 'dot'),
                 x0 = 1993, x1 = 1993, xref = 'x',
                 y0 = 1, y1 = 45, yref = 'y')
          )

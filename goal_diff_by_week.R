@@ -47,14 +47,14 @@ goal.diff.by.week <-
             line = list(shape = 'spline', color = 'rgb(122, 38, 58)', width = 1)) %>%
   add_trace(y = ~Wolves, name = 'Wolverhampton', type = 'scatter', mode = 'lines', 
             line = list(shape = 'spline', color = 'rgb(253, 185, 19)', width = 1)) %>%
-  layout(title = "Goal Differential by Week",
+  layout(title = paste("Goal Differential by Week <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
          xaxis = list(title = "Week", rangemode = 'tozero', showline = FALSE, zeroline = FALSE),
          yaxis = list (title = "",
                        showgrid = FALSE, showline = FALSE, showticklabels = FALSE, zeroline = FALSE),
          margin = list(l = 50,r = 50, b = 100, t = 100, pad = 4),
          shapes = 
            list(type = 'line', line = list(color = 'rgba(220, 220, 220, 1)', dash = 'dot'),
-                x0 = 0, x1 = 21, xref = 'x',
+                x0 = 0, x1 = 38, xref = 'x',
                 y0 = 0, y1 = 0, yref = 'y')
 )
 
