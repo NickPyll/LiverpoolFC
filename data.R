@@ -40,12 +40,33 @@ max(as.Date(as.character(x.current.data$Date), format = '%d/%m/%Y'))
 # premier league clubs
 x.premier.league.clubs <-
   tribble(
-    ~Team,
-    'Arsenal', 'Aston Villa', 'Bournemouth', 'Brighton', 'Burnley', 'Chelsea', 
-    'Crystal Palace', 'Everton', 'Leicester', 'Liverpool', 'Man City', 'Man United', 
-    'Newcastle', 'Norwich', 'Sheffield United', 'Southampton', 'Tottenham', 'Watford', 
-    'West Ham', 'Wolves')
+    ~Team, ~TeamColor,
+    'Arsenal', rgb(239, 1, 7, maxColorValue = 255),
+    'Aston Villa', rgb(149,191,229, maxColorValue = 255),
+    'Bournemouth', rgb(181, 14, 18, maxColorValue = 255),
+    'Brighton', rgb(0, 87, 184, maxColorValue = 255),
+    'Burnley', rgb(108, 29, 69, maxColorValue = 255),
+    # 'Cardiff', rgb(0, 112, 181, maxColorValue = 255),
+    'Chelsea', rgb(3, 70, 148, maxColorValue = 255),
+    'Crystal Palace', rgb(27, 69, 143, maxColorValue = 255),
+    'Everton', rgb(39, 68, 136, maxColorValue = 255),
+    # 'Fulham', rgb(0, 0, 0, maxColorValue = 255),
+    # 'Huddersfield', rgb(14, 99, 173, maxColorValue = 255),
+    'Leicester', rgb(0, 83, 160, maxColorValue = 255),
+    'Liverpool', rgb(200, 12, 46, maxColorValue = 255),
+    'Man City', rgb(108, 171, 221, maxColorValue = 255),
+    'Man United', rgb(218, 41, 28, maxColorValue = 255),
+    'Newcastle', rgb(45, 41, 38, maxColorValue = 255),
+    'Norwich', rgb(0, 166, 80, maxColorValue = 255),
+    'Sheffield United', rgb(238,39,55, maxColorValue = 255),
+    'Southampton', rgb(215, 25, 32, maxColorValue = 255),
+    'Tottenham', rgb(19, 34, 87, maxColorValue = 255),
+    'Watford', rgb(251, 238, 35, maxColorValue = 255),
+    'West Ham', rgb(122, 38, 58, maxColorValue = 255),
+    'Wolves', rgb(253, 185, 19, maxColorValue = 255)
+    )
 
+# create fixture list
 x.fixture.list <- 
   x.premier.league.clubs %>%
   rename(HomeTeam = Team) %>%
@@ -62,6 +83,7 @@ x.fixture.list <-
              by = c('HomeTeam', 'AwayTeam'))
 
 ########## Load Historical Data ####
+
 # data for Liverpool league position by year
 x.liverpool.league.history <-
   tribble(
@@ -196,6 +218,7 @@ x.liverpool.league.history <-
   )
 
 ########## Data Transformation ####
+
 # logic for identifying champions and actual position
 rby.data <-
   x.liverpool.league.history %>%
@@ -528,6 +551,35 @@ orbw.data <-
   spread(Team, Position) %>%
   arrange(Week)
 
+# data for animated points by week
+apbw.data <-
+  pbw.data %>%
+  gather("Team", "Points", Arsenal:Wolves) %>%
+  inner_join(x.premier.league.clubs %>%
+               mutate(Team = str_trim(gsub(" ", "", Team))),
+             by = 'Team') %>%
+  arrange(Team, Week)
+
+# create vector for team colors
+teamcolors <- 
+  apbw.data %>%
+  select(TeamColor) %>%
+  distinct() %>%
+  pull()
+
+# helper function to create frames for animation
+accumulate_by <- function(dat, var) {
+  var <- lazyeval::f_eval(var, dat)
+  lvls <- plotly:::getLevels(var)
+  dats <- lapply(seq_along(lvls), function(x) {
+    cbind(dat[var %in% lvls[seq(1, x)], ], frame = lvls[[x]])
+  })
+  dplyr::bind_rows(dats)
+}
+
+# create animation frames
+apbw.data %<>%
+  accumulate_by(~Week)
+
 # remove unnecessary objects
 rm(list = ls(pattern = "^x"))
-rm(list = ls(pattern = "^json"))

@@ -1,9 +1,5 @@
 # create graph showing point tally by week
 
-# dat <- as.matrix(pbw.data)
-# matplot(dat, type = c("b"),pch = 1,col = 2:21)
-# legend("topleft", legend = colnames(dat[,2:21]), col = 2:21, pch = 1)
-
 points.by.week <- 
   plot_ly(pbw.data, x = ~Week) %>%
   add_trace(y = ~Arsenal, name = 'Arsenal', type = 'scatter', mode = 'lines', 
