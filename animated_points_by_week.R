@@ -7,6 +7,13 @@ animated.points.by.week <- apbw.data %>%
     frame = ~frame, 
     type = 'scatter',
     mode = 'lines',
+    text = ~Team,
+    hovertemplate = paste(
+      "<b>%{text}</b><br>",
+      "%{xaxis.title.text}: %{x:.0f}<br>",
+      "%{y:.0f} %{yaxis.title.text}<br>",
+      "<extra></extra>"
+    ),
     color = ~Team,
     colors = teamcolors
   ) %>% 
@@ -23,11 +30,12 @@ animated.points.by.week <- apbw.data %>%
   animation_opts(
     frame = 300, 
     transition = 0, 
-    redraw = FALSE
+    redraw = FALSE,
+    easing = 'elastic'
   ) %>%
   animation_slider(
-    hide = T
-    ) %>%
+    currentvalue = list(prefix = "week ", font = list(color="red"))    
+  ) %>%
   animation_button(
     x = 1, xanchor = "right", y = 0, yanchor = "bottom"
   ) %>%
@@ -60,10 +68,10 @@ animated.points.by.week <- apbw.data %>%
                 y0 = 75, y1 = 100, yref = 'y'),
            list(type = 'line', line = list(color = 'rgba(200, 12, 46, .2)', dash = 'dot'),
                 x0 = 0, x1 = 38, xref = 'x',
-                y0 = 0, y1 = 38*max(pbw.data$Liverpool)/(sum(!is.na(pbw.data$Liverpool))-1), yref = 'y')
+                y0 = 0, y1 = 38*max(pbw.data$Liverpool, na.rm = TRUE)/(sum(!is.na(pbw.data$Liverpool))-1), yref = 'y')
            )
 )
 
 animated.points.by.week
 
-api_create(animated.points.by.week, filename = "Animated-Premier-League-PBW-2019-2020")
+# api_create(animated.points.by.week, filename = "Animated-Premier-League-PBW-2019-2020")

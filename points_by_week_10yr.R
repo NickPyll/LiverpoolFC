@@ -33,7 +33,7 @@ points.by.week.10yr <-
          margin = list(l = 50,r = 50, b = 100, t = 100, pad = 4), 
          shapes = list(type = 'line', line = list(color = 'rgba(200, 12, 46, .2)', dash = 'dot'),
                 x0 = 0, x1 = 38, xref = 'x',
-                y0 = 0, y1 = 38*max(pbw.data$Liverpool)/(sum(!is.na(pbw.data$Liverpool))-1), yref = 'y'))
+                y0 = 0, y1 = 38*max(pbw.data$Liverpool, na.rm = TRUE)/(sum(!is.na(pbw.data$Liverpool))-1), yref = 'y'))
 
 points.by.week.10yr
 
