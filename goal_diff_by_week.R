@@ -58,7 +58,6 @@ goal.diff.by.week <-
                 y0 = 0, y1 = 0, yref = 'y')
 )
 
-
 goal.diff.by.week
 
 # api_create(goal.diff.by.week, filename = "Premier-League-GDBW-2019")

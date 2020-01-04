@@ -15,6 +15,14 @@ library(tidyr)
 library(stringr)
 library(readr)
 
+########## Load Current Rankings ####
+
+# load spi power rankings from fivethirtyeight.com
+x.spi.538 <- read_csv('https://projects.fivethirtyeight.com/soccer-api/club/spi_global_rankings.csv') %>%
+  filter(league == 'Barclays Premier League') %>%
+  select(-league, -rank) %>%
+  rename(Team_538 = name)
+
 ########## Load Current Season ####
 
 # load premier league seasons
@@ -40,38 +48,40 @@ max(as.Date(as.character(x.current.data$Date), format = '%d/%m/%Y'))
 # premier league clubs
 x.premier.league.clubs <-
   tribble(
-    ~Team, ~TeamColor,
-    'Arsenal', rgb(239, 1, 7, maxColorValue = 255),
-    'Aston Villa', rgb(149,191,229, maxColorValue = 255),
-    'Bournemouth', rgb(181, 14, 18, maxColorValue = 255),
-    'Brighton', rgb(0, 87, 184, maxColorValue = 255),
-    'Burnley', rgb(108, 29, 69, maxColorValue = 255),
+    ~Team, ~Team_538, ~TeamColor,
+    'Arsenal', 'Arsenal', rgb(239, 1, 7, maxColorValue = 255),
+    'Aston Villa', 'Aston Villa', rgb(149,191,229, maxColorValue = 255),
+    'Bournemouth', 'AFC Bournemouth', rgb(181, 14, 18, maxColorValue = 255),
+    'Brighton', 'Brighton and Hove Albion', rgb(0, 87, 184, maxColorValue = 255),
+    'Burnley', 'Burnley', rgb(108, 29, 69, maxColorValue = 255),
     # 'Cardiff', rgb(0, 112, 181, maxColorValue = 255),
-    'Chelsea', rgb(3, 70, 148, maxColorValue = 255),
-    'Crystal Palace', rgb(27, 69, 143, maxColorValue = 255),
-    'Everton', rgb(39, 68, 136, maxColorValue = 255),
+    'Chelsea', 'Chelsea', rgb(3, 70, 148, maxColorValue = 255),
+    'Crystal Palace', 'Crystal Palace', rgb(27, 69, 143, maxColorValue = 255),
+    'Everton', 'Everton', rgb(39, 68, 136, maxColorValue = 255),
     # 'Fulham', rgb(0, 0, 0, maxColorValue = 255),
     # 'Huddersfield', rgb(14, 99, 173, maxColorValue = 255),
-    'Leicester', rgb(0, 83, 160, maxColorValue = 255),
-    'Liverpool', rgb(200, 12, 46, maxColorValue = 255),
-    'Man City', rgb(108, 171, 221, maxColorValue = 255),
-    'Man United', rgb(218, 41, 28, maxColorValue = 255),
-    'Newcastle', rgb(45, 41, 38, maxColorValue = 255),
-    'Norwich', rgb(0, 166, 80, maxColorValue = 255),
-    'Sheffield United', rgb(238,39,55, maxColorValue = 255),
-    'Southampton', rgb(215, 25, 32, maxColorValue = 255),
-    'Tottenham', rgb(19, 34, 87, maxColorValue = 255),
-    'Watford', rgb(251, 238, 35, maxColorValue = 255),
-    'West Ham', rgb(122, 38, 58, maxColorValue = 255),
-    'Wolves', rgb(253, 185, 19, maxColorValue = 255)
+    'Leicester', 'Leicester City', rgb(0, 83, 160, maxColorValue = 255),
+    'Liverpool', 'Liverpool', rgb(200, 12, 46, maxColorValue = 255),
+    'Man City', 'Manchester City', rgb(108, 171, 221, maxColorValue = 255),
+    'Man United', 'Manchester United', rgb(218, 41, 28, maxColorValue = 255),
+    'Newcastle', 'Newcastle', rgb(45, 41, 38, maxColorValue = 255),
+    'Norwich', 'Norwich City', rgb(0, 166, 80, maxColorValue = 255),
+    'Sheffield United', 'Sheffield United', rgb(238,39,55, maxColorValue = 255),
+    'Southampton', 'Southampton', rgb(215, 25, 32, maxColorValue = 255),
+    'Tottenham', 'Tottenham Hotspur', rgb(19, 34, 87, maxColorValue = 255),
+    'Watford', 'Watford', rgb(251, 238, 35, maxColorValue = 255),
+    'West Ham', 'West Ham United', rgb(122, 38, 58, maxColorValue = 255),
+    'Wolves', 'Wolverhampton', rgb(253, 185, 19, maxColorValue = 255)
     )
 
 # create fixture list
 x.fixture.list <- 
   x.premier.league.clubs %>%
+  select(-Team_538, -TeamColor) %>%
   rename(HomeTeam = Team) %>%
   mutate(k = 1) %>%
   inner_join(x.premier.league.clubs %>%
+                 select(-Team_538, -TeamColor) %>%
                  rename(AwayTeam = Team) %>%
                  mutate(k = 1),
              by = 'k') %>%
@@ -580,6 +590,131 @@ accumulate_by <- function(dat, var) {
 # create animation frames
 apbw.data %<>%
   accumulate_by(~Week)
+
+# calculate poisson distributions of goals scored
+x.team.stats <-
+  x.spi.538 %>%
+  mutate(p_score_0 = (ppois(0, lambda = off, lower = FALSE)) - (ppois(1, lambda = off, lower = FALSE)),
+         p_score_1 = (ppois(1, lambda = off, lower = FALSE)) - (ppois(2, lambda = off, lower = FALSE)),
+         p_score_2 = (ppois(2, lambda = off, lower = FALSE)) - (ppois(3, lambda = off, lower = FALSE)),
+         p_score_3 = (ppois(3, lambda = off, lower = FALSE)) - (ppois(4, lambda = off, lower = FALSE)),
+         p_score_4 = (ppois(4, lambda = off, lower = FALSE)) - (ppois(5, lambda = off, lower = FALSE)),
+         p_score_5plus = (ppois(5, lambda = off, lower = FALSE))) %>%
+  inner_join(x.premier.league.clubs %>%
+               select(-TeamColor),
+             by = 'Team_538') %>%
+  select(-Team_538) %>%
+  mutate(Team = str_trim(gsub(" ", "", Team)))
+         
+# add stats to remaining fixtures
+x.remaining.fixtures %<>%
+  select(HomeTeam, AwayTeam) %>%
+  inner_join(x.team.stats %>%
+               select(Team, p_score_0, p_score_1, p_score_2, p_score_3, p_score_4, p_score_5plus) %>%
+               rename(HomeTeam = Team,
+                      Home_score_0 = p_score_0, 
+                      Home_score_1 = p_score_1, 
+                      Home_score_2 = p_score_2, 
+                      Home_score_3 = p_score_3, 
+                      Home_score_4 = p_score_4, 
+                      Home_score_5plus = p_score_5plus),
+             by = 'HomeTeam') %>%
+  inner_join(x.team.stats %>%
+               select(Team, p_score_0, p_score_1, p_score_2, p_score_3, p_score_4, p_score_5plus) %>%
+               rename(AwayTeam = Team,
+                      Away_score_0 = p_score_0, 
+                      Away_score_1 = p_score_1, 
+                      Away_score_2 = p_score_2, 
+                      Away_score_3 = p_score_3, 
+                      Away_score_4 = p_score_4, 
+                      Away_score_5plus = p_score_5plus),
+             by = 'AwayTeam') 
+
+# calculate result matrix (replace with mutate_each solution)
+x.predicted.remaining.fixtures <-
+  x.remaining.fixtures %>%
+  mutate(
+    Home_0_Away_0 = 1.4*Home_score_0*Away_score_0,
+    Home_0_Away_1 = Home_score_0*Away_score_1,
+    Home_0_Away_2 = Home_score_0*Away_score_2,
+    Home_0_Away_3 = Home_score_0*Away_score_3,
+    Home_0_Away_4 = Home_score_0*Away_score_4,
+    Home_0_Away_5 = Home_score_0*Away_score_5plus,
+    
+    Home_1_Away_0 = Home_score_1*Away_score_0,
+    Home_1_Away_1 = 1.4*Home_score_1*Away_score_1,
+    Home_1_Away_2 = Home_score_1*Away_score_2,
+    Home_1_Away_3 = Home_score_1*Away_score_3,
+    Home_1_Away_4 = Home_score_1*Away_score_4,
+    Home_1_Away_5 = Home_score_1*Away_score_5plus,
+    
+    Home_2_Away_0 = Home_score_2*Away_score_0,
+    Home_2_Away_1 = Home_score_2*Away_score_1,
+    Home_2_Away_2 = 1.4*Home_score_2*Away_score_2,
+    Home_2_Away_3 = Home_score_2*Away_score_3,
+    Home_2_Away_4 = Home_score_2*Away_score_4,
+    Home_2_Away_5 = Home_score_2*Away_score_5plus,
+    
+    Home_3_Away_0 = Home_score_3*Away_score_0,
+    Home_3_Away_1 = Home_score_3*Away_score_1,
+    Home_3_Away_2 = Home_score_3*Away_score_2,
+    Home_3_Away_3 = 1.4*Home_score_3*Away_score_3,
+    Home_3_Away_4 = Home_score_3*Away_score_4,
+    Home_3_Away_5 = Home_score_3*Away_score_5plus,
+    
+    Home_4_Away_0 = Home_score_4*Away_score_0,
+    Home_4_Away_1 = Home_score_4*Away_score_1,
+    Home_4_Away_2 = Home_score_4*Away_score_2,
+    Home_4_Away_3 = Home_score_4*Away_score_3,
+    Home_4_Away_4 = 1.4*Home_score_4*Away_score_4,
+    Home_4_Away_5 = Home_score_4*Away_score_5plus,
+    
+    Home_5_Away_0 = Home_score_5plus*Away_score_0,
+    Home_5_Away_1 = Home_score_5plus*Away_score_1,
+    Home_5_Away_2 = Home_score_5plus*Away_score_2,
+    Home_5_Away_3 = Home_score_5plus*Away_score_3,
+    Home_5_Away_4 = Home_score_5plus*Away_score_4,
+    Home_5_Away_5 = 1.4*Home_score_5plus*Away_score_5plus) %>%
+  
+  select(-Home_score_0, -Home_score_1, -Home_score_2, -Home_score_3, -Home_score_4, -Home_score_5plus,
+         -Away_score_0, -Away_score_1, -Away_score_2, -Away_score_3, -Away_score_4, -Away_score_5plus) %>%
+  gather(result, probability, Home_0_Away_0:Home_5_Away_5) %>%
+  mutate(GameID = paste0(HomeTeam, AwayTeam)) %>%
+  separate(result, c("text1", "P_FTHG", "text2", "P_FTAG"), "_") %>%
+  select(-text1, -text2) %>%
+  mutate(P_FTHG = as.numeric(P_FTHG),
+         P_FTAG = as.numeric(P_FTAG)) %>%
+  mutate(HomePoints = if_else(P_FTHG > P_FTAG, 3,
+                              if_else(P_FTHG < P_FTAG, 0, 1)),
+         AwayPoints = if_else(P_FTHG < P_FTAG, 3,
+                              if_else(P_FTHG > P_FTAG, 0, 1))) %>%
+  group_by(GameID, HomeTeam, AwayTeam, HomePoints, AwayPoints) %>%
+  summarise(p_sum = sum(probability)) %>%
+  ungroup() %>%
+  group_by(GameID) %>%
+  filter(p_sum == max(p_sum)) %>%
+  ungroup()
+
+# add predicted results to actual results
+ppbw.data <-
+  x.predicted.remaining.fixtures %>%
+  select(HomeTeam, HomePoints) %>%
+  rename(Team = HomeTeam, PointsEarned = HomePoints) %>%
+  bind_rows(x.predicted.remaining.fixtures %>%
+              select(AwayTeam, AwayPoints) %>%
+              rename(Team = AwayTeam, PointsEarned = AwayPoints)) %>%
+  arrange(Team, PointsEarned) %>%
+  group_by(Team) %>%
+  mutate(Week = 39 - row_number()) %>%
+  ungroup() %>%
+  bind_rows(x.data %>%
+              filter(!is.na(played)) %>%
+              select(Week, Team, PointsEarned)) %>%
+  arrange(Team, Week) %>%
+  group_by(Team) %>%
+  mutate(PointsTally = cumsum(PointsEarned)) %>%
+  select(-PointsEarned) %>%
+  spread(Team, PointsTally)
 
 # remove unnecessary objects
 rm(list = ls(pattern = "^x"))

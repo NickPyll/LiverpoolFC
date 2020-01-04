@@ -55,7 +55,7 @@ predicted.points.by.week <-
   add_annotations(x = 0, y = 34, text = 'West Bromwich 2005/2006 = 34 points', xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
   add_annotations(x = 0, y = 42, text = 'West Ham 2002/2003 = 42 points', xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
 
-  layout(title = paste("Premier League Position by Week <br>", max(rby.data$Year), "-", max(rby.data$Year)+1), '<br> Projected as of Week ' max(pbw.data$Week),
+  layout(title = paste("Premier League Position by Week <br>", max(rby.data$Year), "-", max(rby.data$Year)+1, '<br>', 'Projected as of Week ', max(pbw.data$Week)),
          xaxis = list(title = "Week", rangemode = 'tozero', showline = FALSE, zeroline = FALSE),
          yaxis = list (title = "", rangemode = 'nonnegative',
                        showgrid = FALSE, showline = FALSE, showticklabels = FALSE, zeroline = FALSE),
@@ -75,7 +75,10 @@ predicted.points.by.week <-
                 y0 = 75, y1 = 100, yref = 'y'),
            list(type = 'line', line = list(color = 'rgba(200, 12, 46, .2)', dash = 'dot'),
                 x0 = 0, x1 = 38, xref = 'x',
-                y0 = 0, y1 = 38*max(pbw.data$Liverpool, na.rm = TRUE)/(sum(!is.na(pbw.data$Liverpool))-1), yref = 'y')
+                y0 = 0, y1 = 38*max(pbw.data$Liverpool, na.rm = TRUE)/(sum(!is.na(pbw.data$Liverpool))-1), yref = 'y'),
+           list(type = 'rect', fillcolor = 'rgba(220, 220, 220, .2)', line = list(color = "rgba(220, 220, 220, .2)"),
+                x0 = max(pbw.data$Week), x1 = 38, xref = 'x',
+                y0 = 0, y1 = 114, yref = 'y')
            )
 )
 
