@@ -704,4 +704,4 @@ gdbt.data <-
   spread(Team, GoalDifferential)
 
 # remove unnecessary objects
-# rm(list = ls(pattern = "^x"))
+rm(list = ls(pattern = "^x"))
