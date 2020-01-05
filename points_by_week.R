@@ -1,7 +1,7 @@
 # create graph showing point tally by week
 
-predicted.points.by.week <- 
-  plot_ly(ppbw.data, x = ~Week) %>%
+points.by.week <- 
+  plot_ly(pbw.data, x = ~Week) %>%
   add_trace(y = ~Arsenal, name = 'Arsenal', type = 'scatter', mode = 'lines', 
             line = list(shape = 'spline', color = 'rgb(239, 1, 7)', width = 1)) %>%
   add_trace(y = ~AstonVilla, name = 'Aston Villa', type = 'scatter', mode = 'lines', 
@@ -55,7 +55,7 @@ predicted.points.by.week <-
   add_annotations(x = 0, y = 34, text = 'West Bromwich 2005/2006 = 34 points', xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
   add_annotations(x = 0, y = 42, text = 'West Ham 2002/2003 = 42 points', xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
 
-  layout(title = paste("Premier League Position by Week <br>", max(rby.data$Year), "-", max(rby.data$Year)+1), '<br> Projected as of Week ' max(pbw.data$Week),
+  layout(title = paste("Premier League Position by Week <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
          xaxis = list(title = "Week", rangemode = 'tozero', showline = FALSE, zeroline = FALSE),
          yaxis = list (title = "", rangemode = 'nonnegative',
                        showgrid = FALSE, showline = FALSE, showticklabels = FALSE, zeroline = FALSE),
@@ -79,6 +79,6 @@ predicted.points.by.week <-
            )
 )
 
-predicted.points.by.week
+points.by.week
 
 # api_create(points.by.week, filename = "Premier-League-PBW-2019")

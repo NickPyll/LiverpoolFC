@@ -633,52 +633,13 @@ x.remaining.fixtures %<>%
 # calculate result matrix (replace with mutate_each solution)
 x.predicted.remaining.fixtures <-
   x.remaining.fixtures %>%
-  mutate(
-    Home_0_Away_0 = 1.4*Home_score_0*Away_score_0,
-    Home_0_Away_1 = Home_score_0*Away_score_1,
-    Home_0_Away_2 = Home_score_0*Away_score_2,
-    Home_0_Away_3 = Home_score_0*Away_score_3,
-    Home_0_Away_4 = Home_score_0*Away_score_4,
-    Home_0_Away_5 = Home_score_0*Away_score_5plus,
-    
-    Home_1_Away_0 = Home_score_1*Away_score_0,
-    Home_1_Away_1 = 1.4*Home_score_1*Away_score_1,
-    Home_1_Away_2 = Home_score_1*Away_score_2,
-    Home_1_Away_3 = Home_score_1*Away_score_3,
-    Home_1_Away_4 = Home_score_1*Away_score_4,
-    Home_1_Away_5 = Home_score_1*Away_score_5plus,
-    
-    Home_2_Away_0 = Home_score_2*Away_score_0,
-    Home_2_Away_1 = Home_score_2*Away_score_1,
-    Home_2_Away_2 = 1.4*Home_score_2*Away_score_2,
-    Home_2_Away_3 = Home_score_2*Away_score_3,
-    Home_2_Away_4 = Home_score_2*Away_score_4,
-    Home_2_Away_5 = Home_score_2*Away_score_5plus,
-    
-    Home_3_Away_0 = Home_score_3*Away_score_0,
-    Home_3_Away_1 = Home_score_3*Away_score_1,
-    Home_3_Away_2 = Home_score_3*Away_score_2,
-    Home_3_Away_3 = 1.4*Home_score_3*Away_score_3,
-    Home_3_Away_4 = Home_score_3*Away_score_4,
-    Home_3_Away_5 = Home_score_3*Away_score_5plus,
-    
-    Home_4_Away_0 = Home_score_4*Away_score_0,
-    Home_4_Away_1 = Home_score_4*Away_score_1,
-    Home_4_Away_2 = Home_score_4*Away_score_2,
-    Home_4_Away_3 = Home_score_4*Away_score_3,
-    Home_4_Away_4 = 1.4*Home_score_4*Away_score_4,
-    Home_4_Away_5 = Home_score_4*Away_score_5plus,
-    
-    Home_5_Away_0 = Home_score_5plus*Away_score_0,
-    Home_5_Away_1 = Home_score_5plus*Away_score_1,
-    Home_5_Away_2 = Home_score_5plus*Away_score_2,
-    Home_5_Away_3 = Home_score_5plus*Away_score_3,
-    Home_5_Away_4 = Home_score_5plus*Away_score_4,
-    Home_5_Away_5 = 1.4*Home_score_5plus*Away_score_5plus) %>%
-  
-  select(-Home_score_0, -Home_score_1, -Home_score_2, -Home_score_3, -Home_score_4, -Home_score_5plus,
-         -Away_score_0, -Away_score_1, -Away_score_2, -Away_score_3, -Away_score_4, -Away_score_5plus) %>%
-  gather(result, probability, Home_0_Away_0:Home_5_Away_5) %>%
+  gather(key = "Home_score_n", value = "Home_score", starts_with("Home_")) %>%
+  gather(key = "Away_score_n", value = "Away_score", starts_with("Away_")) %>%
+  mutate(probability = if_else(str_extract(Home_score_n, '\\d') == str_extract(Away_score_n, '\\d'),
+                               1.4*Home_score*Away_score,
+                               Home_score*Away_score)) %>%
+  mutate(result = paste("Home", str_extract(Home_score_n, '\\d'), "Away", str_extract(Away_score_n, '\\d'), sep = "_")) %>%
+  select(HomeTeam, AwayTeam, probability, result) %>%
   mutate(GameID = paste0(HomeTeam, AwayTeam)) %>%
   separate(result, c("text1", "P_FTHG", "text2", "P_FTAG"), "_") %>%
   select(-text1, -text2) %>%
@@ -716,5 +677,31 @@ ppbw.data <-
   select(-PointsEarned) %>%
   spread(Team, PointsTally)
 
+# goals scored by team
+gsbt.data <-
+  x.data %>%
+  mutate(GoalsScored = if_else(is.na(played), NA_real_, GoalsScored)) %>%
+  select(Week, Team, GoalsScored) %>%
+  arrange(Team) %>%
+  spread(Team, GoalsScored)
+
+# goals conceded by team
+gcbt.data <-
+  x.data %>%
+  mutate(GoalsConceded = if_else(is.na(played), NA_real_, GoalsConceded)) %>%
+  select(Week, Team, GoalsConceded) %>%
+  arrange(Team) %>%
+  spread(Team, GoalsConceded)
+
+# goal differential by team
+gdbt.data <-
+  x.data %>%
+  mutate(GoalsScored = if_else(is.na(played), NA_real_, GoalsScored),
+         GoalsConceded = if_else(is.na(played), NA_real_, GoalsConceded)) %>%
+  mutate(GoalDifferential = GoalsScored - GoalsConceded) %>%
+  select(Week, Team, GoalDifferential) %>%
+  arrange(Team) %>%
+  spread(Team, GoalDifferential)
+
 # remove unnecessary objects
-rm(list = ls(pattern = "^x"))
+# rm(list = ls(pattern = "^x"))
