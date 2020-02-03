@@ -4,7 +4,7 @@
 library(plotly)
 # packageVersion('plotly')
 
-# # Set up API credentials
+# # Set up API credentials (this is in .Rprofile for me...)
 # Sys.setenv("plotly_username" = "<your user id>")
 # Sys.setenv("plotly_api_key" = "<your password>")
 
@@ -14,6 +14,10 @@ library(magrittr)
 library(tidyr)
 library(stringr)
 library(readr)
+
+########## Updates and Fixed todo ####
+# fix all manual date/season refs with dynamic coding 
+# current solution ctrl F "update_me" to find
 
 ########## Load Current Rankings ####
 
@@ -25,54 +29,32 @@ x.spi.538 <- read_csv('https://projects.fivethirtyeight.com/soccer-api/club/spi_
 
 ########## Load Current Season ####
 
-# load premier league seasons
-x.1920 <- read_csv('https://www.football-data.co.uk/mmz4281/1920/E0.csv')
-x.1819 <- read_csv('https://www.football-data.co.uk/mmz4281/1819/E0.csv')
-x.1718 <- read_csv('https://www.football-data.co.uk/mmz4281/1718/E0.csv')
-x.1617 <- read_csv('https://www.football-data.co.uk/mmz4281/1617/E0.csv')
-x.1516 <- read_csv('https://www.football-data.co.uk/mmz4281/1516/E0.csv')
-x.1415 <- read_csv('https://www.football-data.co.uk/mmz4281/1415/E0.csv')
-x.1314 <- read_csv('https://www.football-data.co.uk/mmz4281/1314/E0.csv')
-x.1213 <- read_csv('https://www.football-data.co.uk/mmz4281/1213/E0.csv')
-x.1112 <- read_csv('https://www.football-data.co.uk/mmz4281/1112/E0.csv')
-x.1011 <- read_csv('https://www.football-data.co.uk/mmz4281/1011/E0.csv')
-x.0910 <- read_csv('https://www.football-data.co.uk/mmz4281/0910/E0.csv')
+# load current premier league season update_me
+y.1920 <- read_csv('https://www.football-data.co.uk/mmz4281/1920/E0.csv')
 
+# creat copy for separate use update_me
 x.current.data <- 
-  x.1920 %>%
+  y.1920 %>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG)
 
 # see when data was last updated
 max(as.Date(as.character(x.current.data$Date), format = '%d/%m/%Y'))
 
-# premier league clubs
-x.premier.league.clubs <-
-  tribble(
-    ~Team, ~Team_538, ~TeamColor,
-    'Arsenal', 'Arsenal', rgb(239, 1, 7, maxColorValue = 255),
-    'Aston Villa', 'Aston Villa', rgb(149,191,229, maxColorValue = 255),
-    'Bournemouth', 'AFC Bournemouth', rgb(181, 14, 18, maxColorValue = 255),
-    'Brighton', 'Brighton and Hove Albion', rgb(0, 87, 184, maxColorValue = 255),
-    'Burnley', 'Burnley', rgb(108, 29, 69, maxColorValue = 255),
-    # 'Cardiff', rgb(0, 112, 181, maxColorValue = 255),
-    'Chelsea', 'Chelsea', rgb(3, 70, 148, maxColorValue = 255),
-    'Crystal Palace', 'Crystal Palace', rgb(27, 69, 143, maxColorValue = 255),
-    'Everton', 'Everton', rgb(39, 68, 136, maxColorValue = 255),
-    # 'Fulham', rgb(0, 0, 0, maxColorValue = 255),
-    # 'Huddersfield', rgb(14, 99, 173, maxColorValue = 255),
-    'Leicester', 'Leicester City', rgb(0, 83, 160, maxColorValue = 255),
-    'Liverpool', 'Liverpool', rgb(200, 12, 46, maxColorValue = 255),
-    'Man City', 'Manchester City', rgb(108, 171, 221, maxColorValue = 255),
-    'Man United', 'Manchester United', rgb(218, 41, 28, maxColorValue = 255),
-    'Newcastle', 'Newcastle', rgb(45, 41, 38, maxColorValue = 255),
-    'Norwich', 'Norwich City', rgb(0, 166, 80, maxColorValue = 255),
-    'Sheffield United', 'Sheffield United', rgb(238,39,55, maxColorValue = 255),
-    'Southampton', 'Southampton', rgb(215, 25, 32, maxColorValue = 255),
-    'Tottenham', 'Tottenham Hotspur', rgb(19, 34, 87, maxColorValue = 255),
-    'Watford', 'Watford', rgb(251, 238, 35, maxColorValue = 255),
-    'West Ham', 'West Ham United', rgb(122, 38, 58, maxColorValue = 255),
-    'Wolves', 'Wolverhampton', rgb(253, 185, 19, maxColorValue = 255)
-    )
+# load historic premier league seasons update_me
+y.1819 <- read_csv('https://www.football-data.co.uk/mmz4281/1819/E0.csv')
+y.1718 <- read_csv('https://www.football-data.co.uk/mmz4281/1718/E0.csv')
+y.1617 <- read_csv('https://www.football-data.co.uk/mmz4281/1617/E0.csv')
+y.1516 <- read_csv('https://www.football-data.co.uk/mmz4281/1516/E0.csv')
+y.1415 <- read_csv('https://www.football-data.co.uk/mmz4281/1415/E0.csv')
+y.1314 <- read_csv('https://www.football-data.co.uk/mmz4281/1314/E0.csv')
+y.1213 <- read_csv('https://www.football-data.co.uk/mmz4281/1213/E0.csv')
+y.1112 <- read_csv('https://www.football-data.co.uk/mmz4281/1112/E0.csv')
+y.1011 <- read_csv('https://www.football-data.co.uk/mmz4281/1011/E0.csv')
+y.0910 <- read_csv('https://www.football-data.co.uk/mmz4281/0910/E0.csv')
+
+
+# load premier league clubs
+source("ref_clubs.R")
 
 # create fixture list
 x.fixture.list <- 
@@ -87,7 +69,7 @@ x.fixture.list <-
              by = 'k') %>%
   select(-k) %>%
   filter(HomeTeam != AwayTeam) %>%
-  left_join(x.1920 %>%
+  left_join(y.1920 %>% # update_me
               select(HomeTeam, AwayTeam) %>%
               mutate(played = 1), 
              by = c('HomeTeam', 'AwayTeam'))
@@ -95,137 +77,7 @@ x.fixture.list <-
 ########## Load Historical Data ####
 
 # data for Liverpool league position by year
-x.liverpool.league.history <-
-  tribble(
-    ~Year, ~Position, ~League, ~NumTeamsFirstDiv, ~NumTeamsSecondDiv,
-    1893, 1, 3, 16, 12,
-    1894, 1, 2, 16, 15,
-    1895, 16, 1, 16, 16,
-    1896, 1, 2, 16, 16,
-    1897, 5, 1, 16, 16,
-    1898, 9, 1, 16, 16,
-    1899, 2, 1, 18, 18,
-    1900, 10, 1, 18, 18,
-    1901, 1, 1, 18, 18,
-    1902, 11, 1, 18, 18,
-    1903, 5, 1, 18, 18,
-    1904, 17, 1, 18, 18,
-    1905, 1, 2, 18, 18,
-    1906, 1, 1, 20, 20, 
-    1907, 15, 1, 20, 20,
-    1908, 8, 1, 20, 20,
-    1909, 16, 1, 20, 20,
-    1910, 2, 1, 20, 20,
-    1911, 13, 1, 20, 20,
-    1912, 17, 1, 20, 20,
-    1913, 12, 1, 20, 20,
-    1914, 16, 1, 20, 20,
-    1915, 13, 1, 20, 20,
-    1916, NA, NA, 20, 20,
-    1917, NA, NA, 20, 20,
-    1918, NA, NA, 20, 20,
-    1919, NA, NA, 22, 22,
-    1920, 4, 1, 22, 22,
-    1921, 4, 1, 22, 22,
-    1922, 1, 1, 22, 22,
-    1923, 1, 1, 22, 22,
-    1924, 12, 1, 22, 22,
-    1925, 4, 1, 22, 22,
-    1926, 7, 1, 22, 22,
-    1927, 9, 1, 22, 22,
-    1928, 16, 1, 22, 22,
-    1929, 4, 1, 22, 22,
-    1930, 12, 1, 22, 22,
-    1931, 9, 1, 22, 22,
-    1932, 10, 1, 22, 22,
-    1933, 14, 1, 22, 22,
-    1934, 18, 1, 22, 22,
-    1935, 7, 1, 22, 22,
-    1936, 19, 1, 22, 22,
-    1937, 18, 1, 22, 22,
-    1938, 11, 1, 22, 22,
-    1939, 11, 1, 22, 22,
-    1940, NA, NA, 22, 22,
-    1941, NA, NA, 22, 22,
-    1942, NA, NA, 22, 22,
-    1943, NA, NA, 22, 22,
-    1944, NA, NA, 22, 22,
-    1945, NA, NA, 22, 22,
-    1946, NA, NA, 22, 22,
-    1947, 1, 1, 22, 22,
-    1948, 11, 1, 22, 22,
-    1949, 12, 1, 22, 22,
-    1950, 8, 1, 22, 22,
-    1951, 9, 1, 22, 22,
-    1952, 11, 1, 22, 22,
-    1953, 17, 1, 22, 22,
-    1954, 22, 1, 22, 22,
-    1955, 11, 2, 22, 22,
-    1956, 3, 2, 22, 22,
-    1957, 3, 2, 22, 22,
-    1958, 4, 2, 22, 22,
-    1959, 4, 2, 22, 22,
-    1960, 3, 2, 22, 22,
-    1961, 3, 2, 22, 22,
-    1962, 1, 2, 22, 22,
-    1963, 8, 1, 22, 22,
-    1964, 1, 1, 22, 22,
-    1965, 7, 1, 22, 22,
-    1966, 1, 1, 22, 22,
-    1967, 5, 1, 22, 22,
-    1968, 3, 1, 22, 22,
-    1969, 2, 1, 22, 22,
-    1970, 5, 1, 22, 22,
-    1971, 5, 1, 22, 22,
-    1972, 3, 1, 22, 22,
-    1973, 1, 1, 22, 22,
-    1974, 2, 1, 22, 22,
-    1975, 2, 1, 22, 22,
-    1976, 1, 1, 22, 22,
-    1977, 1, 1, 22, 22,
-    1978, 2, 1, 22, 22,
-    1979, 1, 1, 22, 22,
-    1980, 1, 1, 22, 22,
-    1981, 5, 1, 22, 22,
-    1982, 1, 1, 22, 22,
-    1983, 1, 1, 22, 22,
-    1984, 1, 1, 22, 22,
-    1985, 2, 1, 22, 22,
-    1986, 1, 1, 22, 22,
-    1987, 2, 1, 21, 22,
-    1988, 1, 1, 20, 22, 
-    1989, 2, 1, 20, 22,
-    1990, 1, 1, 20, 22,
-    1991, 2, 1, 20, 22,
-    1992, 6, 1, 22, 22,
-    1993, 6, 1, 22, 22, 
-    1994, 8, 1, 22, 22,
-    1995, 4, 1, 22, 22,
-    1996, 3, 1, 20, 22,
-    1997, 4, 1, 20, 22,
-    1998, 3, 1, 20, 22,
-    1999, 7, 1, 20, 22,
-    2000, 4, 1, 20, 22,
-    2001, 3, 1, 20, 22,
-    2002, 2, 1, 20, 22,
-    2003, 5, 1, 20, 22,
-    2004, 4, 1, 20, 22,
-    2005, 5, 1, 20, 22,
-    2006, 3, 1, 20, 22,
-    2007, 3, 1, 20, 22,
-    2008, 4, 1, 20, 22,
-    2009, 2, 1, 20, 22,
-    2010, 7, 1, 20, 22,
-    2011, 6, 1, 20, 22,
-    2012, 8, 1, 20, 22,
-    2013, 7, 1, 20, 22,
-    2014, 2, 1, 20, 22,
-    2015, 6, 1, 20, 22,
-    2016, 8, 1, 20, 22,
-    2017, 4, 1, 20, 22,
-    2018, 4, 1, 20, 22,
-    2019, 2, 1, 20, 22
-  )
+source("ref_liv_hist.R")
 
 ########## Data Transformation ####
 
@@ -237,12 +89,12 @@ rby.data <-
                                          Position + NumTeamsFirstDiv + NumTeamsSecondDiv))) %>%
   mutate(Champions = if_else(Position == 1, ActualPosition, NA_real_))
 
-# format variables and create GameID
+# format variables and create GameID update_me
 x.current.data %<>%
   mutate(
     GameID = paste0(HomeTeam, AwayTeam),
     Date = as.Date(as.character(Date), format = '%d/%m/%Y'))
-x.1920 %<>%
+y.1920 %<>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Liverpool' | AwayTeam == 'Liverpool') %>%
   mutate(
@@ -251,7 +103,7 @@ x.1920 %<>%
     HomeTeam = paste0(as.character(HomeTeam), '1920'),
     AwayTeam = paste0(as.character(AwayTeam), '1920'),
     Season = '1920')
-x.1819 %<>%
+y.1819 %<>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Man City' | AwayTeam == 'Man City') %>%
   mutate(
@@ -260,7 +112,7 @@ x.1819 %<>%
     HomeTeam = paste0(as.character(HomeTeam), '1819'),
     AwayTeam = paste0(as.character(AwayTeam), '1819'),
     Season = '1819') 
-x.1718 %<>%
+y.1718 %<>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Man City' | AwayTeam == 'Man City') %>%
   mutate(
@@ -269,7 +121,7 @@ x.1718 %<>%
     HomeTeam = paste0(as.character(HomeTeam), '1718'),
     AwayTeam = paste0(as.character(AwayTeam), '1718'),
     Season = '1718') 
-x.1617 %<>%
+y.1617 %<>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Chelsea' | AwayTeam == 'Chelsea') %>%
   mutate(
@@ -278,7 +130,7 @@ x.1617 %<>%
     HomeTeam = paste0(as.character(HomeTeam), '1617'),
     AwayTeam = paste0(as.character(AwayTeam), '1617'),
     Season = '1617') 
-x.1516 %<>%
+y.1516 %<>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Leicester' | AwayTeam == 'Leicester') %>%
   mutate(
@@ -287,7 +139,7 @@ x.1516 %<>%
     HomeTeam = paste0(as.character(HomeTeam), '1516'),
     AwayTeam = paste0(as.character(AwayTeam), '1516'),
     Season = '1516') 
-x.1415 %<>%
+y.1415 %<>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Chelsea' | AwayTeam == 'Chelsea') %>%
   mutate(
@@ -296,7 +148,7 @@ x.1415 %<>%
     HomeTeam = paste0(as.character(HomeTeam), '1415'),
     AwayTeam = paste0(as.character(AwayTeam), '1415'),
     Season = '1415') 
-x.1314 %<>%
+y.1314 %<>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Man City' | AwayTeam == 'Man City') %>%
   mutate(
@@ -305,7 +157,7 @@ x.1314 %<>%
     HomeTeam = paste0(as.character(HomeTeam), '1314'),
     AwayTeam = paste0(as.character(AwayTeam), '1314'),
     Season = '1314') 
-x.1213 %<>%
+y.1213 %<>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Man United' | AwayTeam == 'Man United') %>%
   mutate(
@@ -314,7 +166,7 @@ x.1213 %<>%
     HomeTeam = paste0(as.character(HomeTeam), '1213'),
     AwayTeam = paste0(as.character(AwayTeam), '1213'),
     Season = '1213') 
-x.1112 %<>%
+y.1112 %<>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Man City' | AwayTeam == 'Man City') %>%
   mutate(
@@ -323,7 +175,7 @@ x.1112 %<>%
     HomeTeam = paste0(as.character(HomeTeam), '1112'),
     AwayTeam = paste0(as.character(AwayTeam), '1112'),
     Season = '1112') 
-x.1011 %<>%
+y.1011 %<>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Man United' | AwayTeam == 'Man United') %>%
   mutate(
@@ -332,7 +184,7 @@ x.1011 %<>%
     HomeTeam = paste0(as.character(HomeTeam), '1011'),
     AwayTeam = paste0(as.character(AwayTeam), '1011'),
     Season = '1011') 
-x.0910 %<>%
+y.0910 %<>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Chelsea' | AwayTeam == 'Chelsea') %>%
   mutate(
@@ -342,9 +194,10 @@ x.0910 %<>%
     AwayTeam = paste0(as.character(AwayTeam), '0910'),
     Season = '0910') 
 
-# Combine 10 years of data
+# Combine 10 years of data 
 x.data.10yr <-
-  rbind(x.1920, x.1819, x.1718, x.1617, x.1516, x.1415, x.1314, x.1213, x.1112, x.1011, x.0910)
+  mget(ls(pattern="^y\\.\\d+")) %>%
+  bind_rows()
 
 # create df of home team results
 x.home <-
@@ -423,7 +276,7 @@ x.rank <-
          Team = str_trim(gsub(" ", "", Team))) %>%
   ungroup() 
 
-# combine home and away dfs for 10 year data
+# combine home and away dfs for 10 year data update_me
 x.data.10yr <- rbind(x.home.10yr, x.away.10yr) %>%
   # filter to only champions
   filter(Team %in% c('Liverpool1920',
@@ -652,8 +505,10 @@ x.predicted.remaining.fixtures <-
   group_by(GameID, HomeTeam, AwayTeam, HomePoints, AwayPoints) %>%
   summarise(p_sum = sum(probability)) %>%
   ungroup() %>%
+  # Tie in probability gives home advantage
+  arrange(GameID, desc(p_sum), desc(HomePoints)) %>%
   group_by(GameID) %>%
-  filter(p_sum == max(p_sum)) %>%
+  slice(1) %>%
   ungroup()
 
 # add predicted results to actual results
@@ -705,3 +560,4 @@ gdbt.data <-
 
 # remove unnecessary objects
 rm(list = ls(pattern = "^x"))
+rm(list = ls(pattern = "^y"))

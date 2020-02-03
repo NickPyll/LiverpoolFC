@@ -1,4 +1,4 @@
-# create graph showing point tally by week for last 10 champions
+# create graph showing point tally by week for last 10 champions update_me
 points.by.week.10yr <- 
   plot_ly(pbw.data.10yr, x = ~Week) %>%
   add_trace(y = ~ManCity1819, name = 'Man City 2019', type = 'scatter', mode = 'lines',

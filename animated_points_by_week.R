@@ -8,12 +8,6 @@ animated.points.by.week <- apbw.data %>%
     type = 'scatter',
     mode = 'lines',
     text = ~Team,
-    hovertemplate = paste(
-      "<b>%{text}</b><br>",
-      "%{xaxis.title.text}: %{x:.0f}<br>",
-      "%{y:.0f} %{yaxis.title.text}<br>",
-      "<extra></extra>"
-    ),
     color = ~Team,
     colors = teamcolors
   ) %>% 
