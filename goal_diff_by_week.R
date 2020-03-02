@@ -55,8 +55,9 @@ goal.diff.by.week <-
          shapes = 
            list(type = 'line', line = list(color = 'rgba(220, 220, 220, 1)', dash = 'dot'),
                 x0 = 0, x1 = 38, xref = 'x',
-                y0 = 0, y1 = 0, yref = 'y')
-)
+                y0 = 0, y1 = 0, yref = 'y'
+                )
+  )
 
 goal.diff.by.week
 

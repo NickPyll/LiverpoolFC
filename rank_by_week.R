@@ -53,7 +53,14 @@ rank.by.week <-
          xaxis = list(title = "Week", rangemode = 'tozero', showline = FALSE, zeroline = FALSE),
          yaxis = list (title = "", rangemode = 'nonnegative', autorange = "reversed", 
                        showgrid = FALSE, showline = FALSE, showticklabels = FALSE, zeroline = FALSE),
-         margin = list(l = 50,r = 50, b = 100, t = 100, pad = 4))
+         margin = list(l = 50,r = 50, b = 100, t = 100, pad = 4),
+         annotations = list(text = footnote,
+                            showarrow = F, 
+                            xref = 'paper', x = 0,
+                            yref = 'paper', y = -.2,
+                            xanchor = 'left', yanchor = 'auto',
+                            font = list(size = 9, color = 'grey')))
+  
 
 rank.by.week
 

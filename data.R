@@ -40,6 +40,10 @@ x.current.data <-
 # see when data was last updated
 max(as.Date(as.character(x.current.data$Date), format = '%d/%m/%Y'))
 
+# create date footnote
+x.current.date = format(max(as.Date(as.character(x.current.data$Date), format = '%d/%m/%Y')), format = '%b-%d-%Y')
+footnote = paste('Data sourced ', x.current.date, 'from football-data.co.uk')
+
 # load historic premier league seasons update_me
 y.1819 <- read_csv('https://www.football-data.co.uk/mmz4281/1819/E0.csv')
 y.1718 <- read_csv('https://www.football-data.co.uk/mmz4281/1718/E0.csv')
