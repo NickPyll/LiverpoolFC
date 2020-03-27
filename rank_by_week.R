@@ -49,18 +49,24 @@ rank.by.week <-
             line = list(color = 'rgb(122, 38, 58)', width = 1)) %>%
   add_trace(y = ~Wolves, name = 'Wolverhampton', type = 'scatter', mode = 'lines', 
             line = list(color = 'rgb(253, 185, 19)', width = 1)) %>%
-  layout(title = paste("Premier League Position by Week <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
-         xaxis = list(title = "Week", rangemode = 'tozero', showline = FALSE, zeroline = FALSE),
+  layout(
+    # title = paste("Premier League Position by Week <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
+         legend = list(font = list(size = 16)),
+         xaxis = list(title = "Week", rangemode = 'tozero', showline = FALSE, zeroline = FALSE,
+                      titlefont = list(size = 18),
+                      tickfont = list(size = 16)),
          yaxis = list (title = "", rangemode = 'nonnegative', autorange = "reversed", 
                        showgrid = FALSE, showline = FALSE, showticklabels = FALSE, zeroline = FALSE),
-         margin = list(l = 50,r = 50, b = 100, t = 100, pad = 4),
-         annotations = list(text = footnote,
-                            showarrow = F, 
-                            xref = 'paper', x = 0,
-                            yref = 'paper', y = -.2,
-                            xanchor = 'left', yanchor = 'auto',
-                            font = list(size = 9, color = 'grey')))
-  
+         margin = list(l = 50,r = 50, b = 100, t = 100, pad = 4)
+         # ,
+         # annotations = list(text = footnote,
+         #                    showarrow = F, 
+         #                    xref = 'paper', x = 0,
+         #                    yref = 'paper', y = -.2,
+         #                    xanchor = 'left', yanchor = 'auto',
+         #                    font = list(size = 9, color = 'grey'))
+         )
+         
 
 rank.by.week
 

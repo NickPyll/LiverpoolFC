@@ -25,13 +25,41 @@ library(readr)
 x.spi.538 <- read_csv('https://projects.fivethirtyeight.com/soccer-api/club/spi_global_rankings.csv') %>%
   filter(league == 'Barclays Premier League') %>%
   select(-league, -rank) %>%
-  rename(Team_538 = name)
+  rename(Team_538 = name) %>%
+  mutate(Team_538 = str_trim(gsub(" ", "", Team_538)))
 
+# load premier league clubs
+source("ref_clubs.R")
+
+# load historical predictions from fivethirtyeight.com
+x.match_pred.538 <- read_csv('https://projects.fivethirtyeight.com/soccer-api/club/spi_matches.csv') %>%
+  filter(league == 'Barclays Premier League',
+         date > as.Date('1/8/2019', format = '%d/%m/%Y')) %>%
+  select(team1, team2, prob1, prob2, probtie) %>%
+  inner_join(x.premier.league.clubs %>%
+               select(Team, Team_538) %>%
+               rename(team1 = Team_538),
+             by = 'team1') %>%
+  rename(HomeTeam = Team) %>%
+  inner_join(x.premier.league.clubs %>%
+               select(Team, Team_538) %>%
+               rename(team2 = Team_538),
+             by = 'team2') %>%
+  rename(AwayTeam = Team) %>%
+  mutate(HomeTeam = str_trim(gsub(" ", "", HomeTeam)),
+         AwayTeam = str_trim(gsub(" ", "", AwayTeam)),
+         GameID = paste0(HomeTeam, AwayTeam)) %>%
+  select(GameID, HomeTeam, AwayTeam, prob1, prob2, probtie)
+  
 ########## Load Current Season ####
 
 # load current premier league season update_me
-y.1920 <- read_csv('https://www.football-data.co.uk/mmz4281/1920/E0.csv')
-
+y.1920 <- 
+  read_csv('https://www.football-data.co.uk/mmz4281/1920/E0.csv') %>%
+  mutate(
+    HomeTeam = str_trim(gsub(" ", "", HomeTeam)),  
+    AwayTeam = str_trim(gsub(" ", "", AwayTeam)))
+    
 # creat copy for separate use update_me
 x.current.data <- 
   y.1920 %>%
@@ -56,10 +84,6 @@ y.1112 <- read_csv('https://www.football-data.co.uk/mmz4281/1112/E0.csv')
 y.1011 <- read_csv('https://www.football-data.co.uk/mmz4281/1011/E0.csv')
 y.0910 <- read_csv('https://www.football-data.co.uk/mmz4281/0910/E0.csv')
 
-
-# load premier league clubs
-source("ref_clubs.R")
-
 # create fixture list
 x.fixture.list <- 
   x.premier.league.clubs %>%
@@ -76,7 +100,7 @@ x.fixture.list <-
   left_join(y.1920 %>% # update_me
               select(HomeTeam, AwayTeam) %>%
               mutate(played = 1), 
-             by = c('HomeTeam', 'AwayTeam'))
+             by = c('HomeTeam', 'AwayTeam')) 
 
 ########## Load Historical Data ####
 
@@ -88,14 +112,17 @@ source("ref_liv_hist.R")
 # logic for identifying champions and actual position
 rby.data <-
   x.liverpool.league.history %>%
-  mutate(ActualPosition = if_else(League == 1, Position,
-                                  ifelse(League == 2, Position + NumTeamsFirstDiv,
-                                         Position + NumTeamsFirstDiv + NumTeamsSecondDiv))) %>%
+  mutate(ActualPosition = 
+           if_else(League == 1, Position,
+           if_else(League == 2, Position + NumTeamsFirstDiv,
+                  Position + NumTeamsFirstDiv + NumTeamsSecondDiv))) %>%
   mutate(Champions = if_else(Position == 1, ActualPosition, NA_real_))
 
 # format variables and create GameID update_me
 x.current.data %<>%
   mutate(
+    HomeTeam = str_trim(gsub(" ", "", HomeTeam)),  
+    AwayTeam = str_trim(gsub(" ", "", AwayTeam)),
     GameID = paste0(HomeTeam, AwayTeam),
     Date = as.Date(as.character(Date), format = '%d/%m/%Y'))
 y.1920 %<>%
@@ -201,8 +228,11 @@ y.0910 %<>%
 # Combine 10 years of data 
 x.data.10yr <-
   mget(ls(pattern="^y\\.\\d+")) %>%
-  bind_rows()
-
+  bind_rows() %>%
+  mutate(
+    HomeTeam = str_trim(gsub(" ", "", HomeTeam)),  
+    AwayTeam = str_trim(gsub(" ", "", AwayTeam)))
+    
 # create df of home team results
 x.home <-
   x.current.data %>%
@@ -236,8 +266,7 @@ x.data <- rbind(x.home, x.away) %>%
   mutate(played = 1) %>%
   arrange(Date, GameID) %>%
   # logic for calculating goal differential and points earned
-  mutate(Team = str_trim(gsub(" ", "", Team)),
-         GoalDifferential = GoalsScored - GoalsConceded,
+  mutate(GoalDifferential = GoalsScored - GoalsConceded,
          PointsEarned = if_else(GoalsScored > GoalsConceded, 3,
                         if_else(GoalsScored < GoalsConceded, 0, 1))) %>%
   group_by(Team) %>%
@@ -250,8 +279,7 @@ x.week.teams <-
   data.frame(Week = seq(1, max(x.data$Week), 1)) %>%
   mutate(k = 1) %>%
   inner_join(x.premier.league.clubs %>%
-               mutate(Team = str_trim(gsub(" ", "", Team)),
-                      k = 1),
+               mutate(k = 1),
              by = 'k') %>%
   select(-k)
 
@@ -276,23 +304,22 @@ x.rank <-
   group_by(Week) %>%
   arrange(desc(PointsTally), desc(GoalDifferentialTally), desc(GoalsScoredTally)) %>%
   # create league position
-  mutate(Position = row_number(),
-         Team = str_trim(gsub(" ", "", Team))) %>%
+  mutate(Position = row_number()) %>%
   ungroup() 
 
 # combine home and away dfs for 10 year data update_me
 x.data.10yr <- rbind(x.home.10yr, x.away.10yr) %>%
   # filter to only champions
   filter(Team %in% c('Liverpool1920',
-                     'Man City1819',
-                     'Man City1718',
+                     'ManCity1819',
+                     'ManCity1718',
                      'Chelsea1617',
                      'Leicester1516',
                      'Chelsea1415',
-                     'Man City1314',
-                     'Man United1213',
-                     'Man City1112',
-                     'Man United1011',
+                     'ManCity1314',
+                     'ManUnited1213',
+                     'ManCity1112',
+                     'ManUnited1011',
                      'Chelsea0910')) %>%
   arrange(Date, GameID) %>%
   # logic for calculatiung goal differential and points earned
@@ -310,8 +337,7 @@ x.data.10yr <- rbind(x.home.10yr, x.away.10yr) %>%
   group_by(Week) %>%
   arrange(desc(PointsTally), desc(GoalDifferentialTally), desc(GoalsScoredTally)) %>%
   # create league position
-  mutate(Position = row_number(),
-         Team = str_trim(gsub(" ", "", Team))) %>%
+  mutate(Position = row_number()) %>%
   ungroup()
 
 # graph looks better starting from a common point of 0
@@ -385,8 +411,6 @@ x.current.rank <-
 # collect remaining fixtures
 x.remaining.fixtures <-
   x.fixture.list %>%
-  mutate(HomeTeam = str_trim(gsub(" ", "", HomeTeam)),  
-         AwayTeam = str_trim(gsub(" ", "", AwayTeam))) %>%
   filter(is.na(played)) %>%
   select(-played) %>%
   left_join(x.current.rank %>%
@@ -422,8 +446,7 @@ orbw.data <-
 apbw.data <-
   pbw.data %>%
   gather("Team", "Points", Arsenal:Wolves) %>%
-  inner_join(x.premier.league.clubs %>%
-               mutate(Team = str_trim(gsub(" ", "", Team))),
+  inner_join(x.premier.league.clubs,
              by = 'Team') %>%
   arrange(Team, Week)
 
@@ -448,56 +471,187 @@ accumulate_by <- function(dat, var) {
 apbw.data %<>%
   accumulate_by(~Week)
 
-# calculate poisson distributions of goals scored
 x.team.stats <-
   x.spi.538 %>%
-  mutate(p_score_0 = (ppois(0, lambda = off, lower = FALSE)) - (ppois(1, lambda = off, lower = FALSE)),
-         p_score_1 = (ppois(1, lambda = off, lower = FALSE)) - (ppois(2, lambda = off, lower = FALSE)),
-         p_score_2 = (ppois(2, lambda = off, lower = FALSE)) - (ppois(3, lambda = off, lower = FALSE)),
-         p_score_3 = (ppois(3, lambda = off, lower = FALSE)) - (ppois(4, lambda = off, lower = FALSE)),
-         p_score_4 = (ppois(4, lambda = off, lower = FALSE)) - (ppois(5, lambda = off, lower = FALSE)),
-         p_score_5plus = (ppois(5, lambda = off, lower = FALSE))) %>%
+  mutate(p_score_0 = dpois(0, lambda = off),
+         p_score_1 = dpois(1, lambda = off),
+         p_score_2 = dpois(2, lambda = off),
+         p_score_3 = dpois(3, lambda = off),
+         p_score_4 = dpois(4, lambda = off),
+         p_score_5 = dpois(5, lambda = off),
+         p_score_6 = dpois(6, lambda = off),
+         p_score_7 = dpois(7, lambda = off),
+         p_score_8 = dpois(8, lambda = off)) %>%
   inner_join(x.premier.league.clubs %>%
                select(-TeamColor),
              by = 'Team_538') %>%
-  select(-Team_538) %>%
-  mutate(Team = str_trim(gsub(" ", "", Team)))
-         
-# add stats to remaining fixtures
-x.remaining.fixtures %<>%
+  select(-Team_538) 
+
+# add stats to past fixtures
+x.past.fixtures <-
+  x.current.data %>%
   select(HomeTeam, AwayTeam) %>%
   inner_join(x.team.stats %>%
-               select(Team, p_score_0, p_score_1, p_score_2, p_score_3, p_score_4, p_score_5plus) %>%
+               select(Team, 
+                      p_score_0, p_score_1, p_score_2, p_score_3, 
+                      p_score_4, p_score_5, p_score_6, p_score_7, p_score_8) %>%
                rename(HomeTeam = Team,
                       Home_score_0 = p_score_0, 
                       Home_score_1 = p_score_1, 
                       Home_score_2 = p_score_2, 
                       Home_score_3 = p_score_3, 
                       Home_score_4 = p_score_4, 
-                      Home_score_5plus = p_score_5plus),
+                      Home_score_5 = p_score_5,
+                      Home_score_6 = p_score_6, 
+                      Home_score_7 = p_score_7, 
+                      Home_score_8 = p_score_8),
              by = 'HomeTeam') %>%
   inner_join(x.team.stats %>%
-               select(Team, p_score_0, p_score_1, p_score_2, p_score_3, p_score_4, p_score_5plus) %>%
+               select(Team, 
+                      p_score_0, p_score_1, p_score_2, p_score_3, 
+                      p_score_4, p_score_5, p_score_6, p_score_7, p_score_8) %>%
                rename(AwayTeam = Team,
                       Away_score_0 = p_score_0, 
                       Away_score_1 = p_score_1, 
                       Away_score_2 = p_score_2, 
                       Away_score_3 = p_score_3, 
                       Away_score_4 = p_score_4, 
-                      Away_score_5plus = p_score_5plus),
+                      Away_score_5 = p_score_5,
+                      Away_score_6 = p_score_6, 
+                      Away_score_7 = p_score_7, 
+                      Away_score_8 = p_score_8),
              by = 'AwayTeam') 
 
-# calculate result matrix (replace with mutate_each solution)
+# add stats to remaining fixtures
+x.remaining.fixtures %<>%
+  select(HomeTeam, AwayTeam) %>%
+  inner_join(x.team.stats %>%
+               select(Team, 
+                      p_score_0, p_score_1, p_score_2, p_score_3, 
+                      p_score_4, p_score_5, p_score_6, p_score_7, p_score_8) %>%
+               rename(HomeTeam = Team,
+                      Home_score_0 = p_score_0, 
+                      Home_score_1 = p_score_1, 
+                      Home_score_2 = p_score_2, 
+                      Home_score_3 = p_score_3, 
+                      Home_score_4 = p_score_4, 
+                      Home_score_5 = p_score_5,
+                      Home_score_6 = p_score_6, 
+                      Home_score_7 = p_score_7, 
+                      Home_score_8 = p_score_8),
+             by = 'HomeTeam') %>%
+  inner_join(x.team.stats %>%
+               select(Team, 
+                      p_score_0, p_score_1, p_score_2, p_score_3, 
+                      p_score_4, p_score_5, p_score_6, p_score_7, p_score_8) %>%
+               rename(AwayTeam = Team,
+                      Away_score_0 = p_score_0, 
+                      Away_score_1 = p_score_1, 
+                      Away_score_2 = p_score_2, 
+                      Away_score_3 = p_score_3, 
+                      Away_score_4 = p_score_4, 
+                      Away_score_5 = p_score_5,
+                      Away_score_6 = p_score_6, 
+                      Away_score_7 = p_score_7, 
+                      Away_score_8 = p_score_8),
+             by = 'AwayTeam') 
+
+# calculate test matrix 
+x.predicted.past.fixtures <-
+  x.past.fixtures %>%
+  gather(key = "Home_score_n", value = "Home_score", starts_with("Home_")) %>%
+  gather(key = "Away_score_n", value = "Away_score", starts_with("Away_")) %>%
+  mutate(probability = 
+           if_else(str_extract(Home_score_n, '\\d') == str_extract(Away_score_n, '\\d'),
+                   2*Home_score*Away_score,
+                   Home_score*Away_score)) %>%
+  mutate(result = paste("Home", 
+                        str_extract(Home_score_n, '\\d'), "Away", 
+                        str_extract(Away_score_n, '\\d'), sep = "_")) %>%
+  mutate(GameID = paste0(HomeTeam, AwayTeam)) %>%
+  select(GameID, HomeTeam, AwayTeam, probability, result) %>%
+  separate(result, c("text1", "P_FTHG", "text2", "P_FTAG"), "_") %>%
+  select(-text1, -text2) %>%
+  mutate(P_FTHG = as.numeric(P_FTHG),
+         P_FTAG = as.numeric(P_FTAG)) %>%
+  mutate(HomePoints_pred = if_else(P_FTHG > P_FTAG, 3,
+                                   if_else(P_FTHG < P_FTAG, 0, 1)),
+         AwayPoints_pred = if_else(P_FTHG < P_FTAG, 3,
+                                   if_else(P_FTHG > P_FTAG, 0, 1))) %>%
+  group_by(GameID, HomeTeam, AwayTeam, HomePoints_pred, AwayPoints_pred) %>%
+  summarise(p_sum = sum(probability)) %>%
+  ungroup() %>%
+  # Tie in probability gives home advantage
+  arrange(GameID, desc(p_sum), desc(HomePoints_pred)) %>%
+  group_by(GameID) %>%
+  slice(1) %>%
+  ungroup() %>%
+  inner_join(x.current.data %>%
+               select(GameID, FTHG, FTAG),
+             by = 'GameID') %>%
+  mutate(HomePoints_act = if_else(FTHG > FTAG, 3,
+                                  if_else(FTHG < FTAG, 0, 1)),
+         AwayPoints_act = if_else(FTHG < FTAG, 3,
+                                  if_else(FTHG > FTAG, 0, 1))) %>%
+  select(GameID, HomePoints_pred, HomePoints_act, FTHG, FTAG) %>%
+  inner_join(x.match_pred.538,
+             by = 'GameID') %>%
+  mutate(HomePoints_pred.538 = if_else(prob1 > prob2 & prob1 > probtie, 3,
+                                       if_else(prob2 > prob1 & prob2 > probtie, 0, 1))) %>%
+  inner_join(x.past.fixtures %>%
+               gather(key = "Home_score_n", value = "Home_score", starts_with("Home_")) %>%
+               gather(key = "Away_score_n", value = "Away_score", starts_with("Away_")) %>%
+               mutate(probability = Home_score*Away_score) %>%
+               mutate(result = paste("Home",
+                                     str_extract(Home_score_n, '\\d'), "Away",
+                                     str_extract(Away_score_n, '\\d'), sep = "_")) %>%
+               mutate(GameID = paste0(HomeTeam, AwayTeam)) %>%
+               select(GameID, HomeTeam, AwayTeam, probability, result) %>%
+               separate(result, c("text1", "P_FTHG", "text2", "P_FTAG"), "_") %>%
+               select(-text1, -text2) %>%
+               mutate(P_FTHG = as.numeric(P_FTHG),
+                      P_FTAG = as.numeric(P_FTAG)) %>%
+               mutate(HomePoints_pred.nodraw = if_else(P_FTHG > P_FTAG, 3,
+                                                       if_else(P_FTHG < P_FTAG, 0, 1)),
+                      AwayPoints_pred.nodraw = if_else(P_FTHG < P_FTAG, 3,
+                                                       if_else(P_FTHG > P_FTAG, 0, 1))) %>%
+               filter(HomePoints_pred.nodraw != 1) %>%
+               group_by(GameID, HomePoints_pred.nodraw, AwayPoints_pred.nodraw) %>%
+               summarise(p_sum = sum(probability)) %>%
+               ungroup() %>%
+               # Tie in probability gives home advantage
+               arrange(GameID, desc(p_sum), desc(HomePoints_pred.nodraw)) %>%
+               group_by(GameID) %>%
+               slice(1) %>%
+               ungroup(),
+             by = 'GameID')
+
+prop <- with(x.predicted.past.fixtures, table(HomePoints_act, HomePoints_pred)) %>%
+  prop.table()
+prop
+
+prop <- with(x.predicted.past.fixtures, table(HomePoints_act, HomePoints_pred.538)) %>%
+  prop.table()
+prop
+
+prop <- with(x.predicted.past.fixtures, table(HomePoints_act, HomePoints_pred.nodraw)) %>%
+  prop.table()
+prop
+
+# calculate result matrix 
 x.predicted.remaining.fixtures <-
   x.remaining.fixtures %>%
   gather(key = "Home_score_n", value = "Home_score", starts_with("Home_")) %>%
   gather(key = "Away_score_n", value = "Away_score", starts_with("Away_")) %>%
-  mutate(probability = if_else(str_extract(Home_score_n, '\\d') == str_extract(Away_score_n, '\\d'),
-                               1.4*Home_score*Away_score,
-                               Home_score*Away_score)) %>%
-  mutate(result = paste("Home", str_extract(Home_score_n, '\\d'), "Away", str_extract(Away_score_n, '\\d'), sep = "_")) %>%
-  select(HomeTeam, AwayTeam, probability, result) %>%
+  mutate(probability = 
+           if_else(str_extract(Home_score_n, '\\d') == str_extract(Away_score_n, '\\d'),
+                   2*Home_score*Away_score,
+                   Home_score*Away_score)) %>%
+  mutate(result = paste("Home", 
+                        str_extract(Home_score_n, '\\d'), "Away", 
+                        str_extract(Away_score_n, '\\d'), sep = "_")) %>%
   mutate(GameID = paste0(HomeTeam, AwayTeam)) %>%
+  select(GameID, HomeTeam, AwayTeam, probability, result) %>%
   separate(result, c("text1", "P_FTHG", "text2", "P_FTAG"), "_") %>%
   select(-text1, -text2) %>%
   mutate(P_FTHG = as.numeric(P_FTHG),

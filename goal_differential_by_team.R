@@ -160,7 +160,13 @@ goal.differential.by.team <-
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(253, 185, 19)'),
               fillcolor = list(color = 'rgb(253, 185, 19)')) %>%
-  layout(title = paste("Goal Differential by Team <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
-         yaxis = list (title = "Goal Differential"))
+  layout(
+    # title = paste("Goal Differential by Team <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
+    legend = list(font = list(size = 16)),
+    xaxis = list(showticklabels = FALSE),
+    yaxis = list (title = "Goal Differential",
+                  titlefont = list(size = 18),
+                  tickfont = list(size = 16))
+  )
 
 goal.differential.by.team

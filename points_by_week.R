@@ -49,14 +49,23 @@ points.by.week <-
   add_trace(y = ~Wolves, name = 'Wolverhampton', type = 'scatter', mode = 'lines', 
             line = list(shape = 'spline', color = 'rgb(253, 185, 19)', width = 1)) %>%
   
-  add_annotations(x = 0, y = 100, text = 'Manchester City 2017/2018 = 100 points', xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
-  add_annotations(x = 0, y = 87, text = 'Average points by champion = 87 points', xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
-  add_annotations(x = 0, y = 75, text = 'Manchester United 1996/1997 = 75 points', xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
-  add_annotations(x = 0, y = 34, text = 'West Bromwich 2005/2006 = 34 points', xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
-  add_annotations(x = 0, y = 42, text = 'West Ham 2002/2003 = 42 points', xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
+  add_annotations(x = 0, y = 100, text = 'Manchester City 2017/2018 = 100 points', xref = 'x', yref = 'y', showarrow = F, xanchor = 'left',
+                  font = list(size = 16)) %>%
+  add_annotations(x = 0, y = 87, text = 'Average points by champion = 87 points', xref = 'x', yref = 'y', showarrow = F, xanchor = 'left',
+                  font = list(size = 16)) %>%
+  add_annotations(x = 0, y = 75, text = 'Manchester United 1996/1997 = 75 points', xref = 'x', yref = 'y', showarrow = F, xanchor = 'left',
+                  font = list(size = 16)) %>%
+  add_annotations(x = 0, y = 34, text = 'West Bromwich 2005/2006 = 34 points', xref = 'x', yref = 'y', showarrow = F, xanchor = 'left',
+                  font = list(size = 16)) %>%
+  add_annotations(x = 0, y = 42, text = 'West Ham 2002/2003 = 42 points', xref = 'x', yref = 'y', showarrow = F, xanchor = 'left',
+                  font = list(size = 16)) %>%
 
-  layout(title = paste("Premier League Position by Week <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
-         xaxis = list(title = "Week", rangemode = 'tozero', showline = FALSE, zeroline = FALSE),
+  layout(
+    # title = paste("Premier League Position by Week <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
+         legend = list(font = list(size = 14)),
+         xaxis = list(title = "Week", rangemode = 'tozero', showline = FALSE, zeroline = FALSE,
+                      titlefont = list(size = 18),
+                      tickfont = list(size = 16)),
          yaxis = list (title = "", rangemode = 'nonnegative',
                        showgrid = FALSE, showline = FALSE, showticklabels = FALSE, zeroline = FALSE),
          margin = list(l = 50,r = 50, b = 100, t = 100, pad = 4),

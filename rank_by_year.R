@@ -2,36 +2,44 @@
 rank.by.year <- 
   plot_ly(rby.data, 
           x = ~Year) %>%
-  add_trace(y = ~NumTeamsFirstDiv + 1, name = "First/Second Division", 
+  add_trace(y = ~NumTeamsFirstDiv + 1, 
           type = 'scatter', mode = 'lines',
-          line = list(shape = 'hv', color = 'rgba(220, 220, 220, .4)', width = 1),
-          showlegend = FALSE, hoverinfo = 'none') %>%
-  add_trace(y = ~NumTeamsFirstDiv + NumTeamsSecondDiv + 1, name = "First/Second Division", 
+          line = list(shape = 'hv', 
+                      color = 'rgba(220, 220, 220, .4)', 
+                      width = 1),
+          showlegend = FALSE, 
+          hoverinfo = 'none') %>%
+  add_trace(y = ~NumTeamsFirstDiv + NumTeamsSecondDiv + 1, 
           type = 'scatter', mode = 'lines',
-          fill = 'tonexty', fillcolor = 'rgba(220, 220, 220, .4)',
-          line = list(shape = 'hv', color = 'rgba(220, 220, 220, .4)', width = 1),
+          fill = 'tonexty', 
+          fillcolor = 'rgba(220, 220, 220, .4)',
+          line = list(shape = 'hv', 
+                      color = 'rgba(220, 220, 220, .4)', 
+                      width = 1),
           showlegend = FALSE, hoverinfo = 'none') %>%
-  add_trace(y = 45, name = "First/Second Division", 
+  add_trace(y = 45, 
           type = 'scatter', mode = 'lines',
           fill = 'tonexty', fillcolor = 'rgba(220, 220, 220, .7)',
-          line = list(shape = 'hv', color = 'rgba(220, 220, 220, .7)', width = 1),
+          line = list(shape = 'hv', 
+                      color = 'rgba(220, 220, 220, .7)', 
+                      width = 1),
           showlegend = FALSE, hoverinfo = 'none') %>%
   add_trace(y = ~Champions, name = 'Champions', type = 'scatter', mode = 'markers',
-          marker = list(symbol = 18, color = 'orange', size = 7)) %>%
+          marker = list(symbol = 18, color = 'orange', size = 9)) %>%
   add_trace(y = ~ActualPosition, name = 'Liverpool', type = 'scatter', mode = 'lines',
-          line = list(shape = 'linear', color = 'rgb(200, 12, 46)', width = 1)) %>%
-  add_annotations(x = max(rby.data$Year), y = 44, text = 'Third Division', xref = 'x', yref = 'y', showarrow = F, xanchor = 'right') %>%
-  add_annotations(x = max(rby.data$Year), y = 32, text = 'Second Division', xref = 'x', yref = 'y', showarrow = F, xanchor = 'right') %>%
-  add_annotations(x = max(rby.data$Year), y = 12, text = 'First Division', xref = 'x', yref = 'y', showarrow = F, xanchor = 'right') %>%
+          line = list(shape = 'linear', color = 'rgb(200, 12, 46)', width = 2.2)) %>%
+  add_annotations(x = max(rby.data$Year), y = 44, text = 'Third Division', xref = 'x', yref = 'y', showarrow = F, xanchor = 'right',
+                  font = list(size = 18)) %>%
+  add_annotations(x = max(rby.data$Year), y = 32, text = 'Second Division', xref = 'x', yref = 'y', showarrow = F, xanchor = 'right',
+                  font = list(size = 18)) %>%
+  add_annotations(x = max(rby.data$Year), y = 12, text = 'First Division', xref = 'x', yref = 'y', showarrow = F, xanchor = 'right',
+                  font = list(size = 18)) %>%
   layout(
-    # autosize = FALSE, width = 100, height = 100,
-    #      margin = list(l = 50,
-    #                    r = 50,
-    #                    b = 100,
-    #                    t = 100,
-    #                    pad = 4), 
-         title = paste("Liverpool League Position by Year 1893 -", max(rby.data$Year)),
-         xaxis = list(title = "Year", showgrid = TRUE, showline = TRUE),
+         # title = paste("Liverpool League Position by Year 1893 -", max(rby.data$Year)),
+         legend = list(font = list(size = 14), x = 2040, y = 20),
+         xaxis = list(range = c(1890, 2020), title = "Year", showgrid = TRUE, showline = TRUE,
+                      titlefont = list(size = 18),
+                      tickfont = list(size = 16)),
          yaxis = list (title = "", autorange = "reversed", 
                        zeroline = FALSE, showline = FALSE, showgrid = FALSE, showticklabels = FALSE),
          shapes = list(

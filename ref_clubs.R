@@ -25,5 +25,8 @@ x.premier.league.clubs <-
     'Watford', 'Watford', rgb(251, 238, 35, maxColorValue = 255),
     'West Ham', 'West Ham United', rgb(122, 38, 58, maxColorValue = 255),
     'Wolves', 'Wolverhampton', rgb(253, 185, 19, maxColorValue = 255)
-    )
+    ) %>%
+  mutate(Team = str_trim(gsub(" ", "", Team)),
+         Team_538 = str_trim(gsub(" ", "", Team_538)))
+    
 
