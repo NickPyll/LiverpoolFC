@@ -1,19 +1,19 @@
-source("data.R")
+source("data/data_preparation.R")
 
-source("rank_by_year.R")
-source("points_by_week_10yr.R")
+source("visuals/rank_by_year.R")
+source("visuals/points_by_week_10yr.R")
 
-source("rank_by_week.R")
-source("points_by_week.R")
-source("animated_points_by_week.R")
-source("predicted_points_by_week.R")
+source("visuals/rank_by_week.R")
+source("visuals/points_by_week.R")
+source("visuals/animated_points_by_week.R")
+source("visuals/predicted_points_by_week.R")
 
-source("goal_diff_by_week.R")
-source("goal_differential_by_team.R")
-source("goals_scored_by_team.R")
-source("goals_conceded_by_team.R")
+source("visuals/goal_diff_by_week.R")
+source("visuals/goal_differential_by_team.R")
+source("visuals/goals_scored_by_team.R")
+source("visuals/goals_conceded_by_team.R")
 
-source("opp_rank_remaining.R")
+source("visuals/opp_rank_remaining.R")
 
 rank.by.year
 points.by.week.10yr

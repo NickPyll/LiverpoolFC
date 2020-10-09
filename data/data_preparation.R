@@ -29,7 +29,7 @@ x.spi.538 <- read_csv('https://projects.fivethirtyeight.com/soccer-api/club/spi_
   mutate(Team_538 = str_trim(gsub(" ", "", Team_538)))
 
 # load premier league clubs
-source("ref_clubs.R")
+source("data/ref_clubs.R")
 
 # load historical predictions from fivethirtyeight.com
 x.match_pred.538 <- read_csv('https://projects.fivethirtyeight.com/soccer-api/club/spi_matches.csv') %>%
@@ -54,15 +54,15 @@ x.match_pred.538 <- read_csv('https://projects.fivethirtyeight.com/soccer-api/cl
 ########## Load Current Season ####
 
 # load current premier league season update_me
-y.1920 <- 
-  read_csv('https://www.football-data.co.uk/mmz4281/1920/E0.csv') %>%
+y.2021 <- 
+  read_csv('https://www.football-data.co.uk/mmz4281/2021/E0.csv') %>%
   mutate(
     HomeTeam = str_trim(gsub(" ", "", HomeTeam)),  
     AwayTeam = str_trim(gsub(" ", "", AwayTeam)))
     
-# creat copy for separate use update_me
+# create copy for separate use update_me
 x.current.data <- 
-  y.1920 %>%
+  y.2021 %>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG)
 
 # see when data was last updated
@@ -73,6 +73,7 @@ x.current.date = format(max(as.Date(as.character(x.current.data$Date), format = 
 footnote = paste('Data sourced ', x.current.date, 'from football-data.co.uk')
 
 # load historic premier league seasons update_me
+y.1920 <- read_csv('https://www.football-data.co.uk/mmz4281/1920/E0.csv')
 y.1819 <- read_csv('https://www.football-data.co.uk/mmz4281/1819/E0.csv')
 y.1718 <- read_csv('https://www.football-data.co.uk/mmz4281/1718/E0.csv')
 y.1617 <- read_csv('https://www.football-data.co.uk/mmz4281/1617/E0.csv')
@@ -97,7 +98,7 @@ x.fixture.list <-
              by = 'k') %>%
   select(-k) %>%
   filter(HomeTeam != AwayTeam) %>%
-  left_join(y.1920 %>% # update_me
+  left_join(y.2021 %>% # update_me
               select(HomeTeam, AwayTeam) %>%
               mutate(played = 1), 
              by = c('HomeTeam', 'AwayTeam')) 
@@ -105,7 +106,7 @@ x.fixture.list <-
 ########## Load Historical Data ####
 
 # data for Liverpool league position by year
-source("ref_liv_hist.R")
+source("data/ref_liv_hist.R")
 
 ########## Data Transformation ####
 
@@ -125,6 +126,15 @@ x.current.data %<>%
     AwayTeam = str_trim(gsub(" ", "", AwayTeam)),
     GameID = paste0(HomeTeam, AwayTeam),
     Date = as.Date(as.character(Date), format = '%d/%m/%Y'))
+y.2021 %<>%
+  select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
+  filter(HomeTeam == 'Liverpool' | AwayTeam == 'Liverpool') %>%
+  mutate(
+    Date = as.Date(as.character(Date), format = '%d/%m/%Y'),
+    GameID = paste0(HomeTeam, AwayTeam),
+    HomeTeam = paste0(as.character(HomeTeam), '2021'),
+    AwayTeam = paste0(as.character(AwayTeam), '2021'),
+    Season = '2021')
 y.1920 %<>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Liverpool' | AwayTeam == 'Liverpool') %>%
@@ -310,7 +320,8 @@ x.rank <-
 # combine home and away dfs for 10 year data update_me
 x.data.10yr <- rbind(x.home.10yr, x.away.10yr) %>%
   # filter to only champions
-  filter(Team %in% c('Liverpool1920',
+  filter(Team %in% c('Liverpool2021',
+                     'Liverpool1920',
                      'ManCity1819',
                      'ManCity1718',
                      'Chelsea1617',
@@ -322,7 +333,7 @@ x.data.10yr <- rbind(x.home.10yr, x.away.10yr) %>%
                      'ManUnited1011',
                      'Chelsea0910')) %>%
   arrange(Date, GameID) %>%
-  # logic for calculatiung goal differential and points earned
+  # logic for calculating goal differential and points earned
   mutate(GoalDifferential = GoalsScored - GoalsConceded,
          PointsEarned = if_else(GoalsScored > GoalsConceded, 3,
                         if_else(GoalsScored < GoalsConceded, 0, 1))) %>%
