@@ -63,8 +63,8 @@ points.by.week <-
                   font = list(size = 16)) %>%
   add_annotations(x = 0, y = 42, text = 'West Ham 2002/2003 = 42 points', xref = 'x', yref = 'y', showarrow = F, xanchor = 'left',
                   font = list(size = 16)) %>%
-  add_annotations(x = 29, y = 10, text = 'League Suspended due to \n COVID-19 Week 29', xref = 'x', yref = 'y', showarrow = F, xanchor = 'center',
-                  font = list(size = 12)) %>%
+  # add_annotations(x = 29, y = 10, text = 'League Suspended due to \n COVID-19 Week 29', xref = 'x', yref = 'y', showarrow = F, xanchor = 'center',
+  #                 font = list(size = 12)) %>%
   
   layout(
     title = paste("Premier League Position by Week <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
@@ -76,9 +76,9 @@ points.by.week <-
                        showgrid = FALSE, showline = FALSE, showticklabels = FALSE, zeroline = FALSE),
          margin = list(l = 50,r = 50, b = 100, t = 100, pad = 4),
          shapes = list(
-           list(type = 'line', line = list(color = 'grey69', dash = 'dashed'),
-                x0 = 29, x1 = 29, xref = 'x',
-                y0 = 21, y1 = 82, yref = 'y'),
+           # list(type = 'line', line = list(color = 'grey69', dash = 'dashed'),
+           #      x0 = 29, x1 = 29, xref = 'x',
+           #      y0 = 21, y1 = 82, yref = 'y'),
            list(type = 'line', line = list(color = 'rgba(220, 220, 220, 1)', dash = 'dot'),
                 x0 = 0, x1 = 38, xref = 'x',
                 y0 = 40, y1 = 40, yref = 'y'),
