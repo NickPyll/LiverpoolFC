@@ -59,7 +59,9 @@ opp.rank.by.week <-
                   xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
   add_annotations(x = 2, y = 4, text = paste('Mean Manchester City Opponent =', round(mean(orbw.data$ManCity, na.rm = TRUE), 2)),
                   xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
-  
+  add_annotations(x = 2, y = 3, text = paste('Mean Tottenham Opponent =', round(mean(orbw.data$Tottenham, na.rm = TRUE), 2)),
+                  xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
+
   layout(title = paste("Rank of Remaining Opponents <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
          xaxis = list(title = "", showgrid = FALSE, showline = FALSE, zeroline = FALSE, showticklabels = FALSE),
          yaxis = list (title = "Opponent Rank", rangemode = 'nonnegative', 

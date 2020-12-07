@@ -22,7 +22,7 @@ points.by.week.10yr <-
   add_trace(y = ~ManCity1819, name = 'Man City 2019', type = 'scatter', mode = 'lines',
             line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
   add_trace(y = ~Liverpool1920, name = 'Liverpool 2020', type = 'scatter', mode = 'lines', 
-            line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
+            line = list(color = 'rgb(200, 12, 46)', width = 1)) %>%
   add_trace(y = ~Liverpool2021, name = 'Liverpool 2021', type = 'scatter', mode = 'lines', 
             line = list(shape = 'spline', color = 'rgb(200, 12, 46)', width = 4)) %>%
   
