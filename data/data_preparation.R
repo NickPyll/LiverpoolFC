@@ -54,15 +54,15 @@ x.match_pred.538 <- read_csv('https://projects.fivethirtyeight.com/soccer-api/cl
 ########## Load Current Season ####
 
 # load current premier league season update_me
-y.2021 <- 
-  read_csv('https://www.football-data.co.uk/mmz4281/2021/E0.csv') %>%
+y.2122 <- 
+  read_csv('https://www.football-data.co.uk/mmz4281/2122/E0.csv') %>%
   mutate(
     HomeTeam = str_trim(gsub(" ", "", HomeTeam)),  
     AwayTeam = str_trim(gsub(" ", "", AwayTeam)))
     
 # create copy for separate use update_me
 x.current.data <- 
-  y.2021 %>%
+  y.2122 %>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG)
 
 # see when data was last updated
@@ -73,6 +73,7 @@ x.current.date = format(max(as.Date(as.character(x.current.data$Date), format = 
 footnote = paste('Data sourced ', x.current.date, 'from football-data.co.uk')
 
 # load historic premier league seasons update_me
+y.2021 <- read_csv('https://www.football-data.co.uk/mmz4281/2021/E0.csv')
 y.1920 <- read_csv('https://www.football-data.co.uk/mmz4281/1920/E0.csv')
 y.1819 <- read_csv('https://www.football-data.co.uk/mmz4281/1819/E0.csv')
 y.1718 <- read_csv('https://www.football-data.co.uk/mmz4281/1718/E0.csv')
@@ -98,7 +99,7 @@ x.fixture.list <-
              by = 'k') %>%
   select(-k) %>%
   filter(HomeTeam != AwayTeam) %>%
-  left_join(y.2021 %>% # update_me
+  left_join(y.2122 %>% # update_me
               select(HomeTeam, AwayTeam) %>%
               mutate(played = 1), 
              by = c('HomeTeam', 'AwayTeam')) 
@@ -126,9 +127,18 @@ x.current.data %<>%
     AwayTeam = str_trim(gsub(" ", "", AwayTeam)),
     GameID = paste0(HomeTeam, AwayTeam),
     Date = as.Date(as.character(Date), format = '%d/%m/%Y'))
-y.2021 %<>%
+y.2122 %<>%
   select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
   filter(HomeTeam == 'Liverpool' | AwayTeam == 'Liverpool') %>%
+  mutate(
+    Date = as.Date(as.character(Date), format = '%d/%m/%Y'),
+    GameID = paste0(HomeTeam, AwayTeam),
+    HomeTeam = paste0(as.character(HomeTeam), '2122'),
+    AwayTeam = paste0(as.character(AwayTeam), '2122'),
+    Season = '2122')
+y.2021 %<>%
+  select(Date, HomeTeam, AwayTeam, FTHG, FTAG) %>%
+  filter(HomeTeam == 'Man City' | AwayTeam == 'Man City') %>%
   mutate(
     Date = as.Date(as.character(Date), format = '%d/%m/%Y'),
     GameID = paste0(HomeTeam, AwayTeam),
@@ -320,18 +330,20 @@ x.rank <-
 # combine home and away dfs for 10 year data update_me
 x.data.10yr <- rbind(x.home.10yr, x.away.10yr) %>%
   # filter to only champions
-  filter(Team %in% c('Liverpool2021',
-                     'Liverpool1920',
-                     'ManCity1819',
-                     'ManCity1718',
-                     'Chelsea1617',
-                     'Leicester1516',
-                     'Chelsea1415',
-                     'ManCity1314',
-                     'ManUnited1213',
-                     'ManCity1112',
-                     'ManUnited1011',
-                     'Chelsea0910')) %>%
+  filter(Team %in% c(
+    'Liverpool2122',
+    'ManCity2021',
+    'Liverpool1920',
+    'ManCity1819',
+    'ManCity1718',
+    'Chelsea1617',
+    'Leicester1516',
+    'Chelsea1415',
+    'ManCity1314',
+    'ManUnited1213',
+    'ManCity1112',
+    'ManUnited1011',
+    'Chelsea0910')) %>%
   arrange(Date, GameID) %>%
   # logic for calculating goal differential and points earned
   mutate(GoalDifferential = GoalsScored - GoalsConceded,
@@ -728,5 +740,5 @@ gdbt.data <-
   spread(Team, GoalDifferential)
 
 # remove unnecessary objects
-rm(list = ls(pattern = "^x"))
-rm(list = ls(pattern = "^y"))
+# rm(list = ls(pattern = "^x"))
+# rm(list = ls(pattern = "^y"))
