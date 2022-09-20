@@ -37,7 +37,7 @@ rank.by.year <-
   layout(
          # title = paste("Liverpool League Position by Year 1893 -", max(rby.data$Year)),
          legend = list(font = list(size = 14), x = 2040, y = 20),
-         xaxis = list(range = c(1890, 2021), title = "Year", showgrid = TRUE, showline = TRUE,
+         xaxis = list(range = c(1890, 2022), title = "Year", showgrid = TRUE, showline = TRUE,
                       titlefont = list(size = 18),
                       tickfont = list(size = 16)),
          yaxis = list (title = "", autorange = "reversed", 
@@ -58,3 +58,4 @@ rank.by.year <-
 rank.by.year
 
 # api_create(rank.by.year, filename = "Premier-League-RBY-2019")
+
