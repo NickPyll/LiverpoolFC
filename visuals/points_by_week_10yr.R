@@ -27,9 +27,11 @@ points.by.week.10yr <-
             line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
   add_trace(y = ~ManCity2122, name = 'Man City 2122', type = 'scatter', mode = 'lines',
             line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
-  add_trace(y = ~Liverpool2223, name = 'Liverpool 2223', type = 'scatter', mode = 'lines', 
+  add_trace(y = ~ManCity2223, name = 'Man City 2223', type = 'scatter', mode = 'lines',
+            line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
+  add_trace(y = ~Liverpool2324, name = 'Liverpool 2324', type = 'scatter', mode = 'lines', 
             line = list(shape = 'spline', color = 'rgb(200, 12, 46)', width = 4)) %>%
-
+  
     layout(
       # title = paste("Premier League Champions by Week <br> 2010 -", max(rby.data$Year)),
       legend = list(font = list(size = 14)),
