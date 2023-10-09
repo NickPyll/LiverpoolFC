@@ -33,7 +33,7 @@ rank.by.week <-
   #           line = list(shape = 'spline', color = 'rgb(0, 83, 160)', width = 1)) %>%
   add_trace(y = ~Liverpool, name = 'Liverpool', type = 'scatter', mode = 'lines', 
             line = list(shape = 'spline', color = 'rgb(200, 12, 46)', width = 4)) %>%
-  add_trace(y = ~LutonTown, name = 'Luton Town', type = 'scatter', mode = 'lines', 
+  add_trace(y = ~Luton, name = 'Luton Town', type = 'scatter', mode = 'lines', 
             line = list(shape = 'spline', color = 'rgb(247, 143, 30)', width = 1)) %>%
   add_trace(y = ~ManCity, name = 'Manchester City', type = 'scatter', mode = 'lines', 
             line = list(shape = 'spline', color = 'rgb(108, 171, 221)', width = 1)) %>%

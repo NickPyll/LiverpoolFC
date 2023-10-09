@@ -17,7 +17,7 @@ x.premier.league.clubs <-
     # 'Leeds', 'Leeds United', rgb(255, 205, 0, maxColorValue = 255),
     # 'Leicester', 'Leicester City', rgb(0, 83, 160, maxColorValue = 255),
     'Liverpool', 'Liverpool', rgb(200, 12, 46, maxColorValue = 255),
-    'Luton Town', 'Luton Town', rgb(247, 143, 30, maxColorValue = 255),
+    'Luton', 'Luton Town', rgb(247, 143, 30, maxColorValue = 255),
     'Man City', 'Manchester City', rgb(108, 171, 221, maxColorValue = 255),
     'Man United', 'Manchester United', rgb(218, 41, 28, maxColorValue = 255),
     'Newcastle', 'Newcastle', rgb(45, 41, 38, maxColorValue = 255),

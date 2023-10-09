@@ -104,7 +104,7 @@ goal.differential.by.team <-
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(200, 12, 46)'),
               fillcolor = list(color = 'rgb(200, 12, 46)')) %>%
-  add_boxplot(y = ~LutonTown, name = 'Luton Town',
+  add_boxplot(y = ~Luton, name = 'Luton Town',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(247, 143, 30)',
                             outliercolor = 'rgb(247, 143, 30)',
