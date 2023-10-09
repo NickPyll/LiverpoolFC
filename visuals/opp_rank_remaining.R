@@ -59,17 +59,13 @@ opp.rank.by.week <-
             line = list(shape = 'spline', color = 'rgb(253, 185, 19)', width = 1)) %>%
   add_annotations(x = 2, y = 7, text = paste('Mean Liverpool Opponent =', round(mean(orbw.data$Liverpool, na.rm = TRUE), 2)),
                   xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
-  add_annotations(x = 2, y = 6, text = paste('Mean Leicester City Opponent =', round(mean(orbw.data$Leicester, na.rm = TRUE), 2)),
-                  xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
-  add_annotations(x = 2, y = 5, text = paste('Mean Chelsea Opponent =', round(mean(orbw.data$Chelsea, na.rm = TRUE), 2)),
+  add_annotations(x = 2, y = 5, text = paste('Mean Arsenal Opponent =', round(mean(orbw.data$Arsenal, na.rm = TRUE), 2)),
                   xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
   add_annotations(x = 2, y = 4, text = paste('Mean Manchester City Opponent =', round(mean(orbw.data$ManCity, na.rm = TRUE), 2)),
                   xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
   add_annotations(x = 2, y = 3, text = paste('Mean Tottenham Opponent =', round(mean(orbw.data$Tottenham, na.rm = TRUE), 2)),
                   xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
-  add_annotations(x = 2, y = 2, text = paste('Mean Manchester United Opponent =', round(mean(orbw.data$ManUnited, na.rm = TRUE), 2)),
-                  xref = 'x', yref = 'y', showarrow = F, xanchor = 'left') %>%
-  
+
   layout(title = paste("Rank of Remaining Opponents <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
          xaxis = list(title = "", showgrid = FALSE, showline = FALSE, zeroline = FALSE, showticklabels = FALSE),
          yaxis = list (title = "Opponent Rank", rangemode = 'nonnegative', 
