@@ -73,34 +73,36 @@ points.by.week <-
   #                 font = list(size = 12)) %>%
   
   layout(
-    title = paste("Premier League Position by Week <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
-         legend = list(font = list(size = 14)),
-         xaxis = list(title = "Week", rangemode = 'tozero', showline = FALSE, zeroline = FALSE,
-                      titlefont = list(size = 18),
-                      tickfont = list(size = 16)),
-         yaxis = list (title = "", rangemode = 'nonnegative',
-                       showgrid = FALSE, showline = FALSE, showticklabels = FALSE, zeroline = FALSE),
-         margin = list(l = 50,r = 50, b = 100, t = 100, pad = 4),
-         shapes = list(
-           # list(type = 'line', line = list(color = 'grey69', dash = 'dashed'),
-           #      x0 = 29, x1 = 29, xref = 'x',
-           #      y0 = 21, y1 = 82, yref = 'y'),
-           list(type = 'line', line = list(color = 'rgba(220, 220, 220, 1)', dash = 'dot'),
-                x0 = 0, x1 = 38, xref = 'x',
-                y0 = 40, y1 = 40, yref = 'y'),
-           list(type = 'rect', fillcolor = 'rgba(220, 220, 220, .2)', line = list(color = "rgba(220, 220, 220, .2)"),
-                x0 = 0, x1 = 38, xref = 'x',
-                y0 = 34, y1 = 42, yref = 'y'),
-           list(type = 'line', line = list(color = 'rgba(220, 220, 220, 1)', dash = 'dot'),
-                x0 = 0, x1 = 38, xref = 'x',
-                y0 = 87, y1 = 87, yref = 'y'),
-           list(type = 'rect', fillcolor = 'rgba(220, 220, 220, .2)', line = list(color = "rgba(220, 220, 220, .2)"),
-                x0 = 0, x1 = 38, xref = 'x',
-                y0 = 75, y1 = 100, yref = 'y'),
-           list(type = 'line', line = list(color = 'rgba(200, 12, 46, .2)', dash = 'dot'),
-                x0 = 0, x1 = 38, xref = 'x',
-                y0 = 0, y1 = 38*max(pbw.data$Liverpool, na.rm = TRUE)/(sum(!is.na(pbw.data$Liverpool))-1), yref = 'y')
-           )
+    title = list(text = paste("Premier League Point Totals by Week <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
+                 font = list(size = 34)),
+    legend = list(font = list(size = 14)),
+    xaxis = list(title = "Week", rangemode = 'tozero', showline = FALSE, zeroline = FALSE,
+                 titlefont = list(size = 18),
+                 tickfont = list(size = 16)),
+    yaxis = list (title = "", rangemode = 'nonnegative',
+                  showgrid = FALSE, showline = FALSE, showticklabels = FALSE, zeroline = FALSE),
+    margin = list(l = 50,r = 50, b = 100, t = 100, pad = 4),
+    shapes = list(
+      # list(type = 'line', line = list(color = 'grey69', dash = 'dashed'),
+      #      x0 = 29, x1 = 29, xref = 'x',
+      #      y0 = 21, y1 = 82, yref = 'y'),
+      list(type = 'line', line = list(color = 'rgba(220, 220, 220, 1)', dash = 'dot'),
+           x0 = 0, x1 = 38, xref = 'x',
+           y0 = 40, y1 = 40, yref = 'y'),
+      list(type = 'rect', fillcolor = 'rgba(220, 220, 220, .2)', line = list(color = "rgba(220, 220, 220, .2)"),
+           x0 = 0, x1 = 38, xref = 'x',
+           y0 = 34, y1 = 42, yref = 'y'),
+      list(type = 'line', line = list(color = 'rgba(220, 220, 220, 1)', dash = 'dot'),
+           x0 = 0, x1 = 38, xref = 'x',
+           y0 = 87, y1 = 87, yref = 'y'),
+      list(type = 'rect', fillcolor = 'rgba(220, 220, 220, .2)', line = list(color = "rgba(220, 220, 220, .2)"),
+           x0 = 0, x1 = 38, xref = 'x',
+           y0 = 75, y1 = 100, yref = 'y')
+      # ,
+      # list(type = 'line', line = list(color = 'rgba(200, 12, 46, .2)', dash = 'dot'),
+      #      x0 = 0, x1 = 38, xref = 'x',
+      #      y0 = 0, y1 = 38*max(pbw.data$Liverpool, na.rm = TRUE)/(sum(!is.na(pbw.data$Liverpool))-1), yref = 'y')
+      )
 )
 
 points.by.week
