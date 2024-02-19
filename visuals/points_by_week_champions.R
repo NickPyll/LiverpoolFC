@@ -1,6 +1,24 @@
 # create graph showing point tally by week for last 10 champions update_me
 points.by.week.champions <- 
   plot_ly(pbw.champions.data, x = ~Week) %>%
+  add_trace(y = ~ManUnited0001, name = 'Man United 2001', type = 'scatter', mode = 'lines',
+            line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
+  add_trace(y = ~Arsenal0102, name = 'Arsenal 2002', type = 'scatter', mode = 'lines',
+            line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
+  add_trace(y = ~ManUnited0203, name = 'Man United 2003', type = 'scatter', mode = 'lines',
+            line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
+  add_trace(y = ~Arsenal0304, name = 'Arsenal 2004', type = 'scatter', mode = 'lines',
+            line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
+  add_trace(y = ~Chelsea0405, name = 'Chelsea 2005', type = 'scatter', mode = 'lines',
+            line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
+  add_trace(y = ~Chelsea0506, name = 'Chelsea 2006', type = 'scatter', mode = 'lines',
+            line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
+  add_trace(y = ~ManUnited0607, name = 'Man United 2007', type = 'scatter', mode = 'lines',
+            line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
+  add_trace(y = ~ManUnited0708, name = 'Man United 2008', type = 'scatter', mode = 'lines',
+            line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
+  add_trace(y = ~ManUnited0809, name = 'Man United 2009', type = 'scatter', mode = 'lines',
+            line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
   add_trace(y = ~Chelsea0910, name = 'Chelsea 2010', type = 'scatter', mode = 'lines',
             line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
   add_trace(y = ~ManUnited1011, name = 'Man United 2011', type = 'scatter', mode = 'lines',
