@@ -20,9 +20,8 @@ library(magrittr)
 
 ## Load raw premier league seasons ----
 # create ids for seasons
-year.start = 09
-year.end = 24 # update_me
-year.list <- str_pad(paste0(year.start:(year.end-1), (year.start+1):year.end), pad = '0',width = 4, side = 'left')
+year.range <- 2000:2023 # update_me fix_me logic has to be changed to add pre 2000 seasons
+year.list = paste0(substr(year.range, 3, 4), substr(year.range + 1, 3, 4))
 current.season.id = tail(year.list, 1)
 
 # initialize empty data frame
@@ -41,12 +40,20 @@ for (i in year.list){
            HomeTeam = str_replace_all(str_trim(gsub(" ", "", HomeTeam)), "[^[:alnum:]]", ""),
            AwayTeam = str_replace_all(str_trim(gsub(" ", "", AwayTeam)), "[^[:alnum:]]", ""),
            GameID = paste0(HomeTeam, AwayTeam)) |> 
-    select(Season, Date, GameID, HomeTeam, AwayTeam, FTHG, FTAG)  
+    select(Season, Date, GameID, HomeTeam, AwayTeam, FTHG, FTAG) |> 
+    filter(!is.na(HomeTeam))
   
   # date format changed in 2017
   if (as.numeric(i) < 1718) {
-    df %<>%
-      mutate(Date = as.Date(as.character(Date), format = '%d/%m/%y'))
+    
+    # except for 2002 / 2003 season...
+    if(i == '0203'){
+      df %<>%
+        mutate(Date = as.Date(as.character(Date), format = '%d/%m/%Y'))
+      } else {
+        df %<>%
+          mutate(Date = as.Date(as.character(Date), format = '%d/%m/%y'))
+      }
   } else {
     df %<>%
       mutate(Date = as.Date(as.character(Date), format = '%d/%m/%Y'))
@@ -67,7 +74,6 @@ source("data/ref_clubs.R")
 
 # data for Liverpool league position by year
 source("data/ref_liv_hist.R")
-
 
 # Clean and transform data ----
 # create fixture list for current season, filling in missing games
