@@ -20,9 +20,10 @@ library(magrittr)
 
 ## Load raw premier league seasons ----
 # create ids for seasons
-year.range <- 2000:2023 # update_me fix_me logic has to be changed to add pre 2000 seasons
-year.list = paste0(substr(year.range, 3, 4), substr(year.range + 1, 3, 4))
-current.season.id = tail(year.list, 1)
+season.year.end <- 2023
+year.range <- 2000:season.year.end # update_me fix_me logic has to be changed to add pre 2000 seasons
+year.list <- paste0(substr(year.range, 3, 4), substr(year.range + 1, 3, 4))
+current.season.id <- tail(year.list, 1)
 
 # initialize empty data frame
 x.seasons <- data.frame(Date = as.Date(character()),
@@ -139,7 +140,8 @@ x.current.season <-
          GoalsScored = if_else(is.na(GoalsScored), 0, GoalsScored),
          GoalsConceded = if_else(is.na(GoalsConceded), 0, GoalsConceded),
          GoalDifferential = if_else(is.na(GoalDifferential), 0, GoalDifferential)) |> 
-  mutate(PointsEarned = if_else(Team == 'Everton' & Week == 0 & Season == '2324', -10, PointsEarned),
+  mutate(PointsEarned = if_else(Team == 'Everton' & Week == 0 & Season == '2324', -6, 
+                                if_else(Team == 'NottmForest' & Week == 0 & Season == '2324', -4, PointsEarned)), # point deductions applied here
          played = if_else(Week == 0, 0, played)) |>
   arrange(Week, GameID) |>
   group_by(Team) |>
@@ -318,3 +320,4 @@ rby.data <-
 rm(list = ls(pattern = "^x"))
 rm(list = ls(pattern = "^y"))
 rm(current.season.id)
+
