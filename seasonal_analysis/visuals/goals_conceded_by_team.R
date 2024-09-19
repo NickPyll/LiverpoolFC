@@ -1,13 +1,13 @@
-goals.scored.by.team <- 
-  plot_ly(gsbt.data, type = 'box') %>%
-  add_boxplot(y = ~Arsenal, name = 'Arsenal', 
+goals.conceded.by.team <- 
+  plot_ly(gcbt.data, type = 'box') |> 
+  add_boxplot(y = ~Arsenal, name = 'Arsenal',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(239, 1, 7)',
                             outliercolor = 'rgb(239, 1, 7)',
                             line = list(outliercolor = 'rgb(239, 1, 7)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(239, 1, 7)'),
-              fillcolor = list(color = 'rgb(239, 1, 7)')) %>%
+              fillcolor = list(color = 'rgb(239, 1, 7)')) |> 
   add_boxplot(y = ~AstonVilla, name = 'Aston Villa',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(149,191,229)',
@@ -15,7 +15,7 @@ goals.scored.by.team <-
                             line = list(outliercolor = 'rgb(149,191,229)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(149,191,229)'),
-              fillcolor = list(color = 'rgb(149,191,229)')) %>%
+              fillcolor = list(color = 'rgb(149,191,229)')) |> 
   add_boxplot(y = ~Bournemouth, name = 'Bournemouth',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(181, 14, 18)',
@@ -23,7 +23,7 @@ goals.scored.by.team <-
                             line = list(outliercolor = 'rgb(181, 14, 18)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(181, 14, 18)'),
-              fillcolor = list(color = 'rgb(181, 14, 18)')) %>%
+              fillcolor = list(color = 'rgb(181, 14, 18)')) |> 
   add_boxplot(y = ~Brentford, name = 'Brentford',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(227, 6, 19)',
@@ -31,7 +31,7 @@ goals.scored.by.team <-
                             line = list(outliercolor = 'rgb(227, 6, 19)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(227, 6, 19)'),
-              fillcolor = list(color = 'rgb(227, 6, 19)')) %>%
+              fillcolor = list(color = 'rgb(227, 6, 19)')) |> 
   add_boxplot(y = ~Brighton, name = 'Brighton',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(0, 87, 184)',
@@ -39,15 +39,15 @@ goals.scored.by.team <-
                             line = list(outliercolor = 'rgb(0, 87, 184)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(0, 87, 184)'),
-              fillcolor = list(color = 'rgb(0, 87, 184)')) %>%
-  add_boxplot(y = ~Burnley, name = 'Burnley',
-              boxpoints = 'suspectedoutliers',
-              marker = list(color = 'rgb(108, 29, 69)',
-                            outliercolor = 'rgb(108, 29, 69)',
-                            line = list(outliercolor = 'rgb(108, 29, 69)',
-                                        outlierwidth = 2)) ,
-              line = list(color = 'rgb(108, 29, 69)'),
-              fillcolor = list(color = 'rgb(108, 29, 69)')) %>%
+              fillcolor = list(color = 'rgb(0, 87, 184)')) |> 
+  # add_boxplot(y = ~Burnley, name = 'Burnley',
+  #             boxpoints = 'suspectedoutliers',
+  #             marker = list(color = 'rgb(108, 29, 69)',
+  #                           outliercolor = 'rgb(108, 29, 69)',
+  #                           line = list(outliercolor = 'rgb(108, 29, 69)',
+  #                                       outlierwidth = 2)) ,
+  #             line = list(color = 'rgb(108, 29, 69)'),
+  #             fillcolor = list(color = 'rgb(108, 29, 69)')) |> 
   add_boxplot(y = ~Chelsea, name = 'Chelsea',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(3, 70, 148)',
@@ -55,7 +55,7 @@ goals.scored.by.team <-
                             line = list(outliercolor = 'rgb(3, 70, 148)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(3, 70, 148)'),
-              fillcolor = list(color = 'rgb(3, 70, 148)')) %>%
+              fillcolor = list(color = 'rgb(3, 70, 148)')) |> 
   add_boxplot(y = ~CrystalPalace, name = 'Crystal Palace',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(27, 69, 143)',
@@ -63,7 +63,7 @@ goals.scored.by.team <-
                             line = list(outliercolor = 'rgb(27, 69, 143)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(27, 69, 143)'),
-              fillcolor = list(color = 'rgb(27, 69, 143)')) %>%
+              fillcolor = list(color = 'rgb(27, 69, 143)')) |> 
   add_boxplot(y = ~Everton, name = 'Everton',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(39, 68, 136)',
@@ -71,7 +71,7 @@ goals.scored.by.team <-
                             line = list(outliercolor = 'rgb(39, 68, 136)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(39, 68, 136)'),
-              fillcolor = list(color = 'rgb(39, 68, 136)')) %>%
+              fillcolor = list(color = 'rgb(39, 68, 136)')) |> 
   add_boxplot(y = ~Fulham, name = 'Fulham',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(0, 0, 0)',
@@ -79,7 +79,15 @@ goals.scored.by.team <-
                             line = list(outliercolor = 'rgb(0, 0, 0)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(0, 0, 0)'),
-              fillcolor = list(color = 'rgb(0, 0, 0)')) %>%
+              fillcolor = list(color = 'rgb(0, 0, 0)')) |> 
+  add_boxplot(y = ~Ipswich, name = 'Ipswich Town',
+              boxpoints = 'suspectedoutliers',
+              marker = list(color = 'rgb(14, 0, 247)',
+                            outliercolor = 'rgb(14, 0, 247)',
+                            line = list(outliercolor = 'rgb(14, 0, 247)',
+                                        outlierwidth = 2)) ,
+              line = list(color = 'rgb(14, 0, 247)'),
+              fillcolor = list(color = 'rgb(14, 0, 247)')) |> 
   # add_boxplot(y = ~Leeds, name = 'Leeds United',
   #             boxpoints = 'suspectedoutliers',
   #             marker = list(color = 'rgb(255, 205, 0)',
@@ -87,15 +95,15 @@ goals.scored.by.team <-
   #                           line = list(outliercolor = 'rgb(255, 205, 0)',
   #                                       outlierwidth = 2)) ,
   #             line = list(color = 'rgb(255, 205, 0)'),
-  #             fillcolor = list(color = 'rgb(255, 205, 0)')) %>%
-  # add_boxplot(y = ~Leicester, name = 'Leicester City',
-  #             boxpoints = 'suspectedoutliers',
-  #             marker = list(color = 'rgb(0, 83, 160)',
-  #                           outliercolor = 'rgb(0, 83, 160)',
-  #                           line = list(outliercolor = 'rgb(0, 83, 160)',
-  #                                       outlierwidth = 2)) ,
-  #             line = list(color = 'rgb(0, 83, 160)'),
-  #             fillcolor = list(color = 'rgb(0, 83, 160)')) %>%
+  #             fillcolor = list(color = 'rgb(255, 205, 0)')) |> 
+  add_boxplot(y = ~Leicester, name = 'Leicester City',
+              boxpoints = 'suspectedoutliers',
+              marker = list(color = 'rgb(0, 83, 160)',
+                            outliercolor = 'rgb(0, 83, 160)',
+                            line = list(outliercolor = 'rgb(0, 83, 160)',
+                                        outlierwidth = 2)) ,
+              line = list(color = 'rgb(0, 83, 160)'),
+              fillcolor = list(color = 'rgb(0, 83, 160)')) |> 
   add_boxplot(y = ~Liverpool, name = 'Liverpool',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(200, 12, 46)',
@@ -103,15 +111,15 @@ goals.scored.by.team <-
                             line = list(outliercolor = 'rgb(200, 12, 46)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(200, 12, 46)'),
-              fillcolor = list(color = 'rgb(200, 12, 46)')) %>%
-  add_boxplot(y = ~Luton, name = 'Luton Town',
-              boxpoints = 'suspectedoutliers',
-              marker = list(color = 'rgb(247, 143, 30)',
-                            outliercolor = 'rgb(247, 143, 30)',
-                            line = list(outliercolor = 'rgb(247, 143, 30)',
-                                        outlierwidth = 2)) ,
-              line = list(color = 'rgb(247, 143, 30)'),
-              fillcolor = list(color = 'rgb(247, 143, 30)')) %>%
+              fillcolor = list(color = 'rgb(200, 12, 46)')) |> 
+  # add_boxplot(y = ~Luton, name = 'Luton Town',
+  #             boxpoints = 'suspectedoutliers',
+  #             marker = list(color = 'rgb(247, 143, 30)',
+  #                           outliercolor = 'rgb(247, 143, 30)',
+  #                           line = list(outliercolor = 'rgb(247, 143, 30)',
+  #                                       outlierwidth = 2)) ,
+  #             line = list(color = 'rgb(247, 143, 30)'),
+  #             fillcolor = list(color = 'rgb(247, 143, 30)')) |> 
   add_boxplot(y = ~ManCity, name = 'Manchester City',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(108, 171, 221)',
@@ -119,7 +127,7 @@ goals.scored.by.team <-
                             line = list(outliercolor = 'rgb(108, 171, 221)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(108, 171, 221)'),
-              fillcolor = list(color = 'rgb(108, 171, 221)')) %>%
+              fillcolor = list(color = 'rgb(108, 171, 221)')) |> 
   add_boxplot(y = ~ManUnited, name = 'Manchester United',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(218, 41, 28)',
@@ -127,7 +135,7 @@ goals.scored.by.team <-
                             line = list(outliercolor = 'rgb(218, 41, 28)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(218, 41, 28)'),
-              fillcolor = list(color = 'rgb(218, 41, 28)')) %>%
+              fillcolor = list(color = 'rgb(218, 41, 28)')) |> 
   add_boxplot(y = ~Newcastle, name = 'Newcastle',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(45, 41, 38)',
@@ -135,7 +143,7 @@ goals.scored.by.team <-
                             line = list(outliercolor = 'rgb(45, 41, 38)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(45, 41, 38)'),
-              fillcolor = list(color = 'rgb(45, 41, 38)')) %>%
+              fillcolor = list(color = 'rgb(45, 41, 38)')) |> 
   # add_boxplot(y = ~Norwich, name = 'Norwich City',
   #             boxpoints = 'suspectedoutliers',
   #             marker = list(color = 'rgb(0, 166, 80)',
@@ -143,7 +151,7 @@ goals.scored.by.team <-
   #                           line = list(outliercolor = 'rgb(0, 166, 80)',
   #                                       outlierwidth = 2)) ,
   #             line = list(color = 'rgb(0, 166, 80)'),
-  #             fillcolor = list(color = 'rgb(0, 166, 80)')) %>%
+  #             fillcolor = list(color = 'rgb(0, 166, 80)')) |> 
   add_boxplot(y = ~NottmForest, name = 'Nottingham Forest',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(229, 50, 51)',
@@ -151,23 +159,23 @@ goals.scored.by.team <-
                             line = list(outliercolor = 'rgb(229, 50, 51)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(229, 50, 51)'),
-              fillcolor = list(color = 'rgb(229, 50, 51)')) %>%
-  add_boxplot(y = ~SheffieldUnited, name = 'Sheffield United',
-              boxpoints = 'suspectedoutliers',
-              marker = list(color = 'rgb(238,39,55)',
-                            outliercolor = 'rgb(238,39,55)',
-                            line = list(outliercolor = 'rgb(238,39,55)',
-                                        outlierwidth = 2)) ,
-              line = list(color = 'rgb(238,39,55)'),
-              fillcolor = list(color = 'rgb(238,39,55)')) %>%
-  # add_boxplot(y = ~Southampton, name = 'Southampton',
+              fillcolor = list(color = 'rgb(229, 50, 51)')) |> 
+  # add_boxplot(y = ~SheffieldUnited, name = 'Sheffield United',
   #             boxpoints = 'suspectedoutliers',
-  #             marker = list(color = 'rgb(215, 25, 32)',
-  #                           outliercolor = 'rgb(215, 25, 32)',
-  #                           line = list(outliercolor = 'rgb(215, 25, 32)',
+  #             marker = list(color = 'rgb(238,39,55)',
+  #                           outliercolor = 'rgb(238,39,55)',
+  #                           line = list(outliercolor = 'rgb(238,39,55)',
   #                                       outlierwidth = 2)) ,
-  #             line = list(color = 'rgb(215, 25, 32)'),
-  #             fillcolor = list(color = 'rgb(215, 25, 32)')) %>%
+  #             line = list(color = 'rgb(238,39,55)'),
+  #             fillcolor = list(color = 'rgb(238,39,55)')) |> 
+  add_boxplot(y = ~Southampton, name = 'Southampton',
+              boxpoints = 'suspectedoutliers',
+              marker = list(color = 'rgb(215, 25, 32)',
+                            outliercolor = 'rgb(215, 25, 32)',
+                            line = list(outliercolor = 'rgb(215, 25, 32)',
+                                        outlierwidth = 2)) ,
+              line = list(color = 'rgb(215, 25, 32)'),
+              fillcolor = list(color = 'rgb(215, 25, 32)')) |> 
   add_boxplot(y = ~Tottenham, name = 'Tottenham',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(19, 34, 87)',
@@ -175,7 +183,7 @@ goals.scored.by.team <-
                             line = list(outliercolor = 'rgb(19, 34, 87)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(19, 34, 87)'),
-              fillcolor = list(color = 'rgb(19, 34, 87)')) %>%
+              fillcolor = list(color = 'rgb(19, 34, 87)')) |> 
   # add_boxplot(y = ~Watford, name = 'Watford',
   #             boxpoints = 'suspectedoutliers',
   #             marker = list(color = 'rgb(251, 238, 35)',
@@ -183,7 +191,7 @@ goals.scored.by.team <-
   #                           line = list(outliercolor = 'rgb(251, 238, 35)',
   #                                       outlierwidth = 2)) ,
   #             line = list(color = 'rgb(251, 238, 35)'),
-  #             fillcolor = list(color = 'rgb(251, 238, 35)')) %>%
+  #             fillcolor = list(color = 'rgb(251, 238, 35)')) |> 
   # add_boxplot(y = ~WestBrom, name = 'West Bromwich Albion',
   #             boxpoints = 'suspectedoutliers',
   #             marker = list(color = 'rgb(18, 47, 103)',
@@ -191,7 +199,7 @@ goals.scored.by.team <-
   #                           line = list(outliercolor = 'rgb(18, 47, 103)',
   #                                       outlierwidth = 2)) ,
   #             line = list(color = 'rgb(18, 47, 103)'),
-  #             fillcolor = list(color = 'rgb(18, 47, 103)')) %>%
+  #             fillcolor = list(color = 'rgb(18, 47, 103)')) |> 
   add_boxplot(y = ~WestHam, name = 'West Ham United',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(122, 38, 58)',
@@ -199,7 +207,7 @@ goals.scored.by.team <-
                             line = list(outliercolor = 'rgb(122, 38, 58)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(122, 38, 58)'),
-              fillcolor = list(color = 'rgb(122, 38, 58)')) %>%
+              fillcolor = list(color = 'rgb(122, 38, 58)')) |> 
   add_boxplot(y = ~Wolves, name = 'Wolverhampton',
               boxpoints = 'suspectedoutliers',
               marker = list(color = 'rgb(253, 185, 19)',
@@ -207,8 +215,9 @@ goals.scored.by.team <-
                             line = list(outliercolor = 'rgb(253, 185, 19)',
                                         outlierwidth = 2)) ,
               line = list(color = 'rgb(253, 185, 19)'),
-              fillcolor = list(color = 'rgb(253, 185, 19)')) %>%
-  layout(title = paste("Goals Scored by Team <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
-         yaxis = list (title = "Goals Scored", rangemode = 'nonnegative'))
+              fillcolor = list(color = 'rgb(253, 185, 19)')) |> 
+  
+layout(title = paste("Goals Conceded by Team <br>", max(rby.data$Year), "-", max(rby.data$Year)+1),
+         yaxis = list (title = "Goals Conceded", rangemode = 'nonnegative'))
 
-goals.scored.by.team
+goals.conceded.by.team

@@ -20,7 +20,7 @@ library(magrittr)
 
 ## Load raw premier league seasons ----
 # create ids for seasons
-season.year.end <- 2023
+season.year.end <- 2024
 year.range <- 2000:season.year.end # update_me fix_me logic has to be changed to add pre 2000 seasons
 year.list <- paste0(substr(year.range, 3, 4), substr(year.range + 1, 3, 4))
 current.season.id <- tail(year.list, 1)
@@ -36,7 +36,15 @@ x.seasons <- data.frame(Date = as.Date(character()),
 
 # iterate through csv files
 for (i in year.list){
-  df <- read_csv(paste0('https://www.football-data.co.uk/mmz4281/', i, '/E0.csv')) |> 
+
+  print(paste('Ingesting data from season', i))
+
+  df <- 
+    read_csv(
+      paste0('https://www.football-data.co.uk/mmz4281/', # data source
+      i, # season
+      '/E0.csv'), # E0 is premier league 
+      show_col_types = FALSE) |> 
     mutate(Season = i,
            HomeTeam = str_replace_all(str_trim(gsub(" ", "", HomeTeam)), "[^[:alnum:]]", ""),
            AwayTeam = str_replace_all(str_trim(gsub(" ", "", AwayTeam)), "[^[:alnum:]]", ""),
@@ -69,12 +77,12 @@ rm(i)
 
 ## Club metadata ----
 # load premier league clubs
-source("data/ref_clubs.R")
+source("seasonal_analysis/data/ref_clubs.R")
 
 ## Liverpool historical data ----
 
 # data for Liverpool league position by year
-source("data/ref_liv_hist.R")
+source("seasonal_analysis/data/ref_liv_hist.R")
 
 # Clean and transform data ----
 # create fixture list for current season, filling in missing games
@@ -218,6 +226,7 @@ gdbw.order <-
 ## Goal differential ----
 gdbt.data <-
   x.current.season |>
+  filter(Week > 0) |> 
   mutate(GoalsScored = if_else(is.na(played), NA_real_, GoalsScored),
          GoalsConceded = if_else(is.na(played), NA_real_, GoalsConceded)) |>
   mutate(GoalDifferential = GoalsScored - GoalsConceded) |>
@@ -228,6 +237,7 @@ gdbt.data <-
 ## Goals scored ----
 gsbt.data <-
   x.current.season |>
+  filter(Week > 0) |> 
   mutate(GoalsScored = if_else(is.na(played), NA_real_, GoalsScored)) |>
   select(Week, Team, GoalsScored) |>
   arrange(Team) |>
@@ -236,6 +246,7 @@ gsbt.data <-
 ## Goals conceded ----
 gcbt.data <-
   x.current.season |>
+  filter(Week > 0) |> 
   mutate(GoalsConceded = if_else(is.na(played), NA_real_, GoalsConceded)) |>
   select(Week, Team, GoalsConceded) |>
   arrange(Team) |>

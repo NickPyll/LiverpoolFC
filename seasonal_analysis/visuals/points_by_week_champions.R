@@ -47,7 +47,9 @@ points.by.week.champions <-
             line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
   add_trace(y = ~ManCity2223, name = 'Man City 2223', type = 'scatter', mode = 'lines',
             line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
-  add_trace(y = ~Liverpool2324, name = 'Liverpool 2324', type = 'scatter', mode = 'lines', 
+  add_trace(y = ~ManCity2324, name = 'Man City 2324', type = 'scatter', mode = 'lines',
+            line = list(color = 'rgba(220, 220, 220, 1)', width = 1)) %>%
+  add_trace(y = ~Liverpool2425, name = 'Liverpool 2425', type = 'scatter', mode = 'lines', 
             line = list(shape = 'spline', color = 'rgb(200, 12, 46)', width = 4)) %>%
   
     layout(
