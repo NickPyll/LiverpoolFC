@@ -26,4 +26,3 @@ goal.differential.by.team
 goals.scored.by.team
 goals.conceded.by.team
 opp.rank.by.week
-
