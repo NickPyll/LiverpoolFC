@@ -11,6 +11,8 @@ library(plotly)
 # packages needed for data manipulation
 library(tidyverse)
 library(magrittr)
+library(janitor)
+library(slider)
 
 ## Updates and fixes todo ----
 # fix all manual date/season refs with dynamic coding
@@ -27,12 +29,12 @@ current.season.id <- tail(year.list, 1)
 
 # initialize empty data frame
 x.seasons <- data.frame(
-  Date = as.Date(character()),
-  GameID = character(),
-  HomeTeam = character(),
-  AwayTeam = character(),
-  FTHG = integer(),
-  FTAG = integer(),
+  date = as.Date(character()),
+  game_id = character(),
+  home_team = character(),
+  away_team = character(),
+  fthg = integer(),
+  ftag = integer(),
   stringsAsFactors = FALSE
 )
 
@@ -56,21 +58,22 @@ for (i in year.list) {
       GameID = paste0(HomeTeam, AwayTeam)
     ) |>
     select(Season, Date, GameID, HomeTeam, AwayTeam, FTHG, FTAG) |>
-    filter(!is.na(HomeTeam))
+    filter(!is.na(HomeTeam)) |>
+    clean_names()
 
   # date format changed in 2017
   if (as.numeric(i) < 1718) {
     # except for 2002 / 2003 season...
     if (i == "0203") {
       df %<>%
-        mutate(Date = as.Date(as.character(Date), format = "%d/%m/%Y"))
+        mutate(date = as.Date(as.character(date), format = "%d/%m/%Y"))
     } else {
       df %<>%
-        mutate(Date = as.Date(as.character(Date), format = "%d/%m/%y"))
+        mutate(date = as.Date(as.character(date), format = "%d/%m/%y"))
     }
   } else {
     df %<>%
-      mutate(Date = as.Date(as.character(Date), format = "%d/%m/%Y"))
+      mutate(date = as.Date(as.character(date), format = "%d/%m/%Y"))
   }
 
   x.seasons <- x.seasons |> bind_rows(df)
@@ -93,98 +96,98 @@ source("seasonal_analysis/data/ref_liv_hist.R")
 # create fixture list for current season, filling in missing games
 x.fixture.list <-
   premier.league.clubs |>
-  select(Team) |>
-  rename(HomeTeam = Team) |>
+  select(team) |>
+  rename(home_team = team) |>
   mutate(k = 1) |>
   inner_join(
     premier.league.clubs |>
-      select(Team) |>
-      rename(AwayTeam = Team) |>
+      select(team) |>
+      rename(away_team = team) |>
       mutate(k = 1),
     by = "k"
   ) |>
   select(-k) |>
-  filter(HomeTeam != AwayTeam) |>
+  filter(home_team != away_team) |>
   left_join(
     x.seasons |>
-      filter(Season == current.season.id) |>
-      select(HomeTeam, AwayTeam) |>
+      filter(season == current.season.id) |>
+      select(home_team, away_team) |>
       mutate(played = 1),
-    by = c("HomeTeam", "AwayTeam")
+    by = c("home_team", "away_team")
   )
 
 # transform current season data
 x.seasons <-
   x.seasons |>
   mutate(
-    Team = HomeTeam,
-    GoalsScored = FTHG,
-    GoalsConceded = FTAG
+    team = home_team,
+    goals_scored = fthg,
+    goals_conceded = ftag
   ) |>
-  select(Season, GameID, Date, Team, GoalsScored, GoalsConceded) |>
+  select(season, game_id, date, team, goals_scored, goals_conceded) |>
   bind_rows(x.seasons |>
     mutate(
-      Team = AwayTeam,
-      GoalsScored = FTAG,
-      GoalsConceded = FTHG
+      team = away_team,
+      goals_scored = ftag,
+      goals_conceded = fthg
     ) |>
-    select(Season, GameID, Date, Team, GoalsScored, GoalsConceded)) |>
+    select(season, game_id, date, team, goals_scored, goals_conceded)) |>
   mutate(played = 1) |>
-  arrange(Season, Date, GameID) |>
+  arrange(season, date, game_id) |>
   # logic for calculating goal differential and points earned
   mutate(
-    GoalDifferential = GoalsScored - GoalsConceded,
-    PointsEarned = if_else(GoalsScored > GoalsConceded, 3,
-      if_else(GoalsScored < GoalsConceded, 0, 1)
+    goal_differential = goals_scored - goals_conceded,
+    points_earned = if_else(goals_scored > goals_conceded, 3,
+      if_else(goals_scored < goals_conceded, 0, 1)
     )
   ) |>
-  group_by(Season, Team) |>
+  group_by(season, team) |>
   # create week number
-  mutate(Week = row_number()) |>
+  mutate(week = row_number()) |>
   ungroup()
 
 x.current.week <- x.seasons |>
-  filter(Season == current.season.id) |>
-  summarize(max(Week)) |>
+  filter(season == current.season.id) |>
+  summarize(max(week)) |>
   pull()
 
 # create a week df to complete
 x.week.teams <-
-  data.frame(Week = seq(0, x.current.week, 1)) |>
-  mutate(Season = current.season.id) |>
+  data.frame(week = seq(0, x.current.week, 1)) |>
+  mutate(season = current.season.id) |>
   inner_join(
     premier.league.clubs |>
-      select(Team) |>
-      mutate(Season = current.season.id),
-    by = "Season"
+      select(team) |>
+      mutate(season = current.season.id),
+    by = "season"
   )
 
 ## Current season data ----
 x.current.season <-
   x.seasons |>
-  filter(Season == current.season.id) |>
+  filter(season == current.season.id) |>
   right_join(x.week.teams,
-    by = c("Week", "Team", "Season")
+    by = c("week", "team", "season")
   ) |>
   mutate(
-    PointsEarned = if_else(is.na(PointsEarned), 0, PointsEarned),
-    GoalsScored = if_else(is.na(GoalsScored), 0, GoalsScored),
-    GoalsConceded = if_else(is.na(GoalsConceded), 0, GoalsConceded),
-    GoalDifferential = if_else(is.na(GoalDifferential), 0, GoalDifferential)
+    points_earned = if_else(is.na(points_earned), 0, points_earned),
+    goals_scored = if_else(is.na(goals_scored), 0, goals_scored),
+    goals_conceded = if_else(is.na(goals_conceded), 0, goals_conceded),
+    goal_differential = if_else(is.na(goal_differential), 0, goal_differential)
   ) |>
   mutate(
-    PointsEarned = if_else(Team == "Everton" & Week == 0 & Season == "2324", -6,
-      if_else(Team == "NottmForest" & Week == 0 & Season == "2324", -4, PointsEarned)
+    points_earned = if_else(team == "Everton" & week == 0 & season == "2324", -6,
+      if_else(team == "NottmForest" & week == 0 & season == "2324", -4, points_earned)
     ), # point deductions applied here
-    played = if_else(Week == 0, 0, played)
+    played = if_else(week == 0, 0, played)
   ) |>
-  arrange(Week, GameID) |>
-  group_by(Team) |>
+  arrange(week, game_id) |>
+  group_by(team) |>
   mutate(
-    PointsTally = cumsum(PointsEarned),
-    GoalsScoredTally = cumsum(GoalsScored),
-    GoalsConcededTally = cumsum(GoalsConceded),
-    GoalDifferentialTally = cumsum(GoalDifferential)
+    points_tally = cumsum(points_earned),
+    goals_scored_tally = cumsum(goals_scored),
+    goals_conceded_tally = cumsum(goals_conceded),
+    goal_differential_tally = cumsum(goal_differential)
   ) |>
   ungroup()
 
@@ -192,19 +195,19 @@ x.current.season <-
 x.seasons.champions <-
   x.seasons |>
   left_join(premier.league.champions,
-    by = "Season"
+    by = "season"
   ) |>
-  mutate(Champion = if_else(Season == current.season.id, "Liverpool", Champion)) |>
-  filter(Team == Champion) |>
-  mutate(Champion = paste0(Team, Season)) |>
-  arrange(Season, Week) |>
-  group_by(Champion) |>
+  mutate(champion = if_else(season == current.season.id, "Liverpool", champion)) |>
+  filter(team == champion) |>
+  mutate(champion = paste0(team, season)) |>
+  arrange(season, week) |>
+  group_by(champion) |>
   # create week number and cumulative sums
   mutate(
-    PointsTally = cumsum(PointsEarned),
-    GoalsScoredTally = cumsum(GoalsScored),
-    GoalsConcededTally = cumsum(GoalsConceded),
-    GoalDifferentialTally = cumsum(GoalDifferential)
+    points_tally = cumsum(points_earned),
+    goals_scored_tally = cumsum(goals_scored),
+    goals_conceded_tally = cumsum(goals_conceded),
+    goal_differential_tally = cumsum(goal_differential)
   ) |>
   ungroup()
 
@@ -212,105 +215,161 @@ x.seasons.champions <-
 pbw.data <-
   x.current.season |>
   filter(!is.na(played)) |>
-  select(Week, Team, PointsTally) |>
-  spread(Team, PointsTally) |>
-  arrange(Week)
+  select(week, team, points_tally) |>
+  spread(team, points_tally) |>
+  arrange(week)
 
 pbw.order <-
   x.current.season |>
-  slice_max(Week, by = Team) |>
-  arrange(desc(PointsTally), desc(GoalDifferentialTally), desc(GoalsScoredTally)) |>
-  mutate(Team = fct_inorder(Team)) |>
-  pull(Team) |>
+  slice_max(week, by = team) |>
+  arrange(desc(points_tally), desc(goal_differential_tally), desc(goals_scored_tally)) |>
+  mutate(team = fct_inorder(team)) |>
+  pull(team) |>
   levels()
 
 ## Points by week (past champions) ----
 pbw.champions.data <-
   x.seasons.champions |>
-  select(Week, Champion, PointsTally) |>
-  spread(Champion, PointsTally) |>
-  arrange(Week)
+  select(week, champion, points_tally) |>
+  spread(champion, points_tally) |>
+  arrange(week)
 
 pbw.champions.order <-
   x.seasons.champions |>
-  slice_max(Week, by = Champion) |>
-  arrange(desc(Week), desc(PointsTally)) |>
-  mutate(Champion = fct_inorder(Champion)) |>
-  pull(Champion) |>
+  slice_max(week, by = champion) |>
+  arrange(desc(week), desc(points_tally)) |>
+  mutate(champion = fct_inorder(champion)) |>
+  pull(champion) |>
   levels() # update_me should sort this based on current week instead of end week
+
+## Points per game by week ----
+ppgbw.data <-
+  x.current.season |>
+  filter(!is.na(played)) |>
+  mutate(points_per_game = points_tally / week) |>
+  select(week, team, points_per_game) |>
+  spread(team, points_per_game) |>
+  arrange(week)
+
+ppgbw.order <-
+  x.current.season |>
+  filter(!is.na(played)) |>
+  mutate(points_per_game = points_tally / week) |>
+  select(week, team, points_per_game) |>
+  slice_max(week, by = team) |>
+  arrange(desc(points_per_game)) |>
+  mutate(team = fct_inorder(team)) |>
+  pull(team) |>
+  levels()
+
+## L5 Form ----
+ppgbwl5.data <-
+  x.current.season |>
+  filter(!is.na(played), week > 0) |>
+  group_by(team) |>
+  arrange(week) |>
+  mutate(points_per_week_last5 = slide_dbl(points_earned, mean, .before = 4, .complete = FALSE)) |>
+  ungroup() |>
+  select(week, team, points_per_week_last5) |>
+  spread(team, points_per_week_last5)
+
+ppgbwl5.order <-
+  x.current.season |>
+  filter(!is.na(played), week > 0) |>
+  group_by(team) |>
+  arrange(week) |>
+  mutate(points_per_week_last5 = slide_dbl(points_earned, mean, .before = 4, .complete = FALSE)) |>
+  ungroup() |>
+  select(week, team, points_per_week_last5, points_tally) |>
+  slice_max(week, by = team) |>
+  arrange(desc(points_per_week_last5), desc(points_tally)) |>
+  mutate(team = fct_inorder(team)) |>
+  pull(team) |>
+  levels()
 
 ## Goal differential by week----
 gdbw.data <-
   x.current.season |>
   filter(!is.na(played)) |>
-  select(Week, Team, GoalDifferentialTally) |>
-  spread(Team, GoalDifferentialTally) |>
-  arrange(Week)
+  select(week, team, goal_differential_tally) |>
+  spread(team, goal_differential_tally) |>
+  arrange(week)
 
 gdbw.order <-
   x.current.season |>
-  slice_max(Week, by = Team) |>
-  arrange(desc(Week), desc(GoalDifferentialTally), desc(GoalsScoredTally)) |>
-  mutate(Team = fct_inorder(Team)) |>
-  pull(Team) |>
+  slice_max(week, by = team) |>
+  arrange(desc(week), desc(goal_differential_tally), desc(goals_scored_tally)) |>
+  mutate(team = fct_inorder(team)) |>
+  pull(team) |>
   levels()
 
 ## Goal differential ----
 gdbt.data <-
   x.current.season |>
-  filter(Week > 0) |>
+  filter(week > 0) |>
   mutate(
-    GoalsScored = if_else(is.na(played), NA_real_, GoalsScored),
-    GoalsConceded = if_else(is.na(played), NA_real_, GoalsConceded)
+    goals_scored = if_else(is.na(played), NA_real_, goals_scored),
+    goals_conceded = if_else(is.na(played), NA_real_, goals_conceded)
   ) |>
-  mutate(GoalDifferential = GoalsScored - GoalsConceded) |>
-  select(Week, Team, GoalDifferential) |>
-  arrange(Team) |>
-  spread(Team, GoalDifferential)
+  mutate(goal_differential = goals_scored - goals_conceded) |>
+  select(week, team, goal_differential) |>
+  arrange(team) |>
+  spread(team, goal_differential)
 
 ## Goals scored ----
 gsbt.data <-
   x.current.season |>
-  filter(Week > 0) |>
-  mutate(GoalsScored = if_else(is.na(played), NA_real_, GoalsScored)) |>
-  select(Week, Team, GoalsScored) |>
-  arrange(Team) |>
-  spread(Team, GoalsScored)
+  filter(week > 0) |>
+  mutate(goals_scored = if_else(is.na(played), NA_real_, goals_scored)) |>
+  select(week, team, goals_scored) |>
+  arrange(team) |>
+  spread(team, goals_scored)
 
 ## Goals conceded ----
 gcbt.data <-
   x.current.season |>
-  filter(Week > 0) |>
-  mutate(GoalsConceded = if_else(is.na(played), NA_real_, GoalsConceded)) |>
-  select(Week, Team, GoalsConceded) |>
-  arrange(Team) |>
-  spread(Team, GoalsConceded)
+  filter(week > 0) |>
+  mutate(goals_conceded = if_else(is.na(played), NA_real_, goals_conceded)) |>
+  select(week, team, goals_conceded) |>
+  arrange(team) |>
+  spread(team, goals_conceded)
 
 ## Rank by week ----
 rbw.data <-
   x.current.season |>
-  filter(Week > 0) |>
-  group_by(Week) |>
-  arrange(desc(PointsTally), desc(GoalDifferentialTally), desc(GoalsScoredTally)) |>
-  mutate(Position = row_number()) |>
+  filter(week > 0) |>
+  group_by(week) |>
+  arrange(desc(points_tally), desc(goal_differential_tally), desc(goals_scored_tally)) |>
+  mutate(position = row_number()) |>
   ungroup() |>
-  select(Week, Team, Position) |>
-  spread(Team, Position) |>
-  arrange(Week)
+  select(week, team, position) |>
+  spread(team, position) |>
+  arrange(week)
 
 rbw.order <-
   x.current.season |>
-  group_by(Week) |>
-  arrange(desc(PointsTally), desc(GoalDifferentialTally), desc(GoalsScoredTally)) |>
-  mutate(Position = row_number()) |>
+  group_by(week) |>
+  arrange(desc(points_tally), desc(goal_differential_tally), desc(goals_scored_tally)) |>
+  mutate(position = row_number()) |>
   ungroup() |>
-  slice_max(Week, by = Team) |>
-  arrange(desc(Week), Position) |>
-  mutate(Team = fct_inorder(Team)) |>
-  pull(Team) |>
+  slice_max(week, by = team) |>
+  arrange(desc(week), position) |>
+  mutate(team = fct_inorder(team)) |>
+  pull(team) |>
   levels()
 
 ## Remaining opponent ----
+
+x.current_form <-
+  x.current.season |>
+  filter(!is.na(played), week > 0) |>
+  group_by(team) |>
+  arrange(week) |>
+  mutate(form = slide_dbl(points_earned, mean, .before = 4, .complete = FALSE)) |>
+  ungroup() |>
+  select(week, team, form) |>
+  slice_max(week, by = team) |>
+  select(team, form)
 
 # collect remaining fixtures
 x.remaining.fixtures <-
@@ -319,60 +378,91 @@ x.remaining.fixtures <-
   select(-played) |>
   left_join(
     x.current.season |>
-      filter(Week == x.current.week) |>
-      arrange(desc(PointsTally), desc(GoalDifferentialTally), desc(GoalsScoredTally)) |>
-      mutate(HomePosition = row_number()) |>
+      filter(week == x.current.week) |>
+      arrange(desc(points_tally), desc(goal_differential_tally), desc(goals_scored_tally)) |>
+      mutate(home_position = row_number()) |>
       ungroup() |>
-      select(Team, HomePosition),
-    by = c("HomeTeam" = "Team")
+      select(team, home_position),
+    by = c("home_team" = "team")
   ) |>
   left_join(
     x.current.season |>
-      filter(Week == x.current.week) |>
-      arrange(desc(PointsTally), desc(GoalDifferentialTally), desc(GoalsScoredTally)) |>
-      mutate(AwayPosition = row_number()) |>
+      filter(week == x.current.week) |>
+      arrange(desc(points_tally), desc(goal_differential_tally), desc(goals_scored_tally)) |>
+      mutate(away_position = row_number()) |>
       ungroup() |>
-      select(Team, AwayPosition),
-    by = c("AwayTeam" = "Team")
+      select(team, away_position),
+    by = c("away_team" = "team")
+  ) |>
+  left_join(
+    x.current_form |>
+      rename(away_form = form),
+    by = c("away_team" = "team")
+  ) |>
+  left_join(
+    x.current_form |>
+      rename(home_form = form),
+    by = c("home_team" = "team")
   )
 
 # join league position
-x.strength.of.schedule <-
+x.remaining_rank <-
   x.remaining.fixtures |>
-  select(HomeTeam, AwayPosition) |>
+  select(home_team, away_position) |>
   rename(
-    Team = HomeTeam,
-    Position = AwayPosition
+    team = home_team,
+    position = away_position
   ) |>
   bind_rows(x.remaining.fixtures |>
-    select(AwayTeam, HomePosition) |>
+    select(away_team, home_position) |>
     rename(
-      Team = AwayTeam,
-      Position = HomePosition
+      team = away_team,
+      position = home_position
     )) |>
-  arrange(Team, desc(Position)) |>
-  group_by(Team) |>
-  mutate(Week = row_number()) |>
+  arrange(team, desc(position)) |>
+  group_by(team) |>
+  mutate(week = row_number()) |>
   ungroup()
 
-orbw.data <-
-  x.strength.of.schedule |>
-  select(Team, Week, Position) |>
-  spread(Team, Position) |>
-  arrange(Week)
+ropbw.data <-
+  x.remaining_rank |>
+  select(team, week, position) |>
+  spread(team, position) |>
+  arrange(week)
+
+# join form
+rofbw.data <-
+  x.remaining.fixtures |>
+  select(home_team, away_form) |>
+  rename(
+    team = home_team,
+    opponent_form = away_form
+  ) |>
+  bind_rows(x.remaining.fixtures |>
+    select(away_team, home_form) |>
+    rename(
+      team = away_team,
+      opponent_form = home_form
+    )) |>
+  group_by(team) |>
+  mutate(week = row_number()) |>
+  ungroup() |>
+  spread(team, opponent_form) |>
+  arrange(week)
+
 
 ## Rank by year ----
 rby.data <-
   x.liverpool.league.history |>
   mutate(
-    ActualPosition = # logic for identifying champions and actual position
-      if_else(League == 1, Position,
-        if_else(League == 2, Position + NumTeamsFirstDiv,
-          Position + NumTeamsFirstDiv + NumTeamsSecondDiv
+    actual_position = # logic for identifying champions and actual position
+      if_else(league == 1, position,
+        if_else(league == 2, position + num_teams_firstdiv,
+          position + num_teams_firstdiv + num_teams_seconddiv
         )
       )
   ) |>
-  mutate(Champions = if_else(Position == 1, ActualPosition, NA_real_))
+  mutate(champions = if_else(position == 1, actual_position, NA_real_))
 
 # remove unnecessary objects
 rm(list = ls(pattern = "^x"))

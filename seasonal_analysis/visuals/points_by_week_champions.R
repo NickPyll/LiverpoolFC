@@ -1,6 +1,6 @@
 # create graph showing point tally by week for last 10 champions update_me
 points.by.week.champions <-
-  plot_ly(pbw.champions.data, x = ~Week) %>%
+  plot_ly(pbw.champions.data, x = ~week) %>%
   add_trace(
     y = ~ManUnited0001, name = "Man United 2001", type = "scatter", mode = "lines",
     line = list(color = "rgba(220, 220, 220, 1)", width = 1)
@@ -98,15 +98,15 @@ points.by.week.champions <-
     line = list(color = "rgba(220, 220, 220, 1)", width = 1)
   ) %>%
   add_trace(
-    y = ~Liverpool2425, name = "Liverpool 2025?", type = "scatter", mode = "lines",
+    y = ~Liverpool2425, name = "Liverpool 2025!", type = "scatter", mode = "lines",
     line = list(shape = "spline", color = "rgb(200, 12, 46)", width = 4)
   ) %>%
   layout(
-    title = paste("Premier League Champions by Week 2001 -", max(rby.data$Year)), font = list(size = 15),
+    title = paste("Premier League Champions by week 2001 -", max(rby.data$year)), font = list(size = 15),
     legend = list(font = list(size = 14)),
     xaxis = list(
       title = "",
-      # title = "Week",
+      # title = "week",
       rangemode = "tozero", showline = FALSE, zeroline = FALSE,
       showgrid = FALSE,
       showticklabels = FALSE

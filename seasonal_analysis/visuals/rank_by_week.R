@@ -1,25 +1,25 @@
-# Teams with game in hand not rendering correctly...need to address
+# teams with game in hand not rendering correctly...need to address
 
 # create graph showing league position by week
 rank.by.week <-
-  plot_ly(rbw.data, x = ~Week) |>
+  plot_ly(rbw.data, x = ~week) |>
   Reduce(\(x, y) {
-    premier.league.clubs <- premier.league.clubs |> filter(Team == y)
+    premier.league.clubs <- premier.league.clubs |> filter(team == y)
     add_trace(
       x,
-      y = reformulate(y), name = premier.league.clubs$TeamName, type = "scatter", mode = "lines",
+      y = reformulate(y), name = premier.league.clubs$team_name, type = "scatter", mode = "lines",
       line = list(
-        shape = "spline", color = premier.league.clubs$TeamColor,
-        width = premier.league.clubs$TeamLineWidth,
-        dash = premier.league.clubs$TeamLineType
+        shape = "spline", color = premier.league.clubs$team_color,
+        width = premier.league.clubs$team_linewidth,
+        dash = premier.league.clubs$team_linetype
       )
     )
   }, x = rbw.order, init = _) |>
   layout(
-    title = paste("Premier League Position by Week <br>", max(rby.data$Year), "-", max(rby.data$Year) + 1),
+    title = paste("Premier League Position by Week <br>", max(rby.data$year), "-", max(rby.data$year) + 1),
     legend = list(font = list(size = 16)),
     xaxis = list(
-      title = "Week",
+      title = "week",
       showline = FALSE,
       zeroline = FALSE,
       titlefont = list(size = 18),

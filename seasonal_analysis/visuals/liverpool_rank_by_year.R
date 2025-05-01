@@ -1,10 +1,10 @@
 # create graph showing final position by year update_me
 rank.by.year <-
   plot_ly(rby.data,
-    x = ~Year
+    x = ~year
   ) %>%
   add_trace(
-    y = ~ NumTeamsFirstDiv + 1,
+    y = ~ num_teams_firstdiv + 1,
     type = "scatter", mode = "lines",
     line = list(
       shape = "hv",
@@ -15,7 +15,7 @@ rank.by.year <-
     hoverinfo = "none"
   ) %>%
   add_trace(
-    y = ~ NumTeamsFirstDiv + NumTeamsSecondDiv + 1,
+    y = ~ num_teams_firstdiv + num_teams_seconddiv + 1,
     type = "scatter", mode = "lines",
     fill = "tonexty",
     fillcolor = "rgba(220, 220, 220, .4)",
@@ -38,30 +38,30 @@ rank.by.year <-
     showlegend = FALSE, hoverinfo = "none"
   ) %>%
   add_trace(
-    y = ~ActualPosition, name = "League Position", type = "scatter", mode = "lines",
+    y = ~actual_position, name = "League Position", type = "scatter", mode = "lines",
     line = list(shape = "linear", color = "rgb(200, 12, 46)", width = 2.2)
   ) %>%
   add_trace(
-    y = ~Champions, name = "Champions", type = "scatter", mode = "markers",
+    y = ~champions, name = "Champions", type = "scatter", mode = "markers",
     marker = list(symbol = 18, color = "orange", size = 9)
   ) %>%
   add_annotations(
-    x = max(rby.data$Year), y = 44, text = "Third Division", xref = "x", yref = "y", showarrow = F, xanchor = "right",
+    x = max(rby.data$year), y = 44, text = "Third Division", xref = "x", yref = "y", showarrow = F, xanchor = "right",
     font = list(size = 18)
   ) %>%
   add_annotations(
-    x = max(rby.data$Year), y = 32, text = "Second Division", xref = "x", yref = "y", showarrow = F, xanchor = "right",
+    x = max(rby.data$year), y = 32, text = "Second Division", xref = "x", yref = "y", showarrow = F, xanchor = "right",
     font = list(size = 18)
   ) %>%
   add_annotations(
-    x = max(rby.data$Year), y = 12, text = "First Division", xref = "x", yref = "y", showarrow = F, xanchor = "right",
+    x = max(rby.data$year), y = 12, text = "First Division", xref = "x", yref = "y", showarrow = F, xanchor = "right",
     font = list(size = 18)
   ) %>%
   layout(
-    # title = paste("Liverpool League Position by Year 1893 -", max(rby.data$Year)),
+    title = paste("Liverpool League Position by year 1893 -", max(rby.data$year)),
     legend = list(font = list(size = 14), x = 2040, y = 20),
     xaxis = list(
-      range = c(1890, season.year.end), title = "Year", showgrid = TRUE, showline = TRUE,
+      range = c(1890, max(rby.data$year) + 2), title = "", showgrid = TRUE, showline = TRUE,
       titlefont = list(size = 18),
       tickfont = list(size = 16)
     ),
